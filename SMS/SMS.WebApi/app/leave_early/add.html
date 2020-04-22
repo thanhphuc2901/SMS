@@ -1,0 +1,111 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Custom styles for this template-->
+    <link href="../../Assets/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" />
+    <link href="../../Assets/css/sb-admin-2.min.css" rel="stylesheet" />
+    <script src="../../Assets/js/leave_early/common.js"></script>
+    <link href="../../Assets/css/customize.css" rel="stylesheet" />
+</head>
+<body>
+    <div class="form-horizontal">
+        <div class="card-header py-3">
+            <h5 class="m-0 font-weight-bold text-primary">ĐĂNG KÝ VỀ SỚM</h5>
+        </div>
+        <!--Cột bên trái dành cho form đăng ký-->
+        <div class="col-md-12 row-form">
+            <div class="column form-horizontal form-left col-md-6">
+                <div class="form-group row-1 input-group">
+                    <label class="control-label col-md-2 top-space lb">Mã CNV</label>
+                    <div class="col-md-7 input-group">
+                        <div class="top-space">
+                            <input type="text" class="form-control input-previous-button col-md-12">
+                        </div>
+                        &nbsp;
+                        &nbsp;
+                        <label class="btn-primary btn btn-get-info top-space" title="Xem thông tin CNV">
+                            <i class="fas fa-user"></i>&nbsp; Thông tin CNV
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-group input-group">
+                    <label class="control-label col-md-2 lb">Ca</label>
+                    <div class="col-md-4">
+                        <select class="form-control input-previous-button">
+                            <option value="0" selected>Hành chính</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group input-group">
+                    <label class="control-label col-md-2 lb">Mục đích</label>
+                    <div class="col-md-4">
+                        <select class="form-control input-previous-button">
+                            <option value="true" selected>Công việc</option>
+                            <option value="false">Cá nhân</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group input-group">
+                    <label class="control-label col-md-2 lb">Lý do</label>
+                    <div class="col-md-10">
+                        <textarea class="form-control col-md-12" rows="2"></textarea>
+                    </div>
+                </div>
+
+                <div class="form-group input-group">
+                    <label class="control-label col-md-2 lb">Đăng ký giờ về</label>
+                    <div class="col-md-4">
+                        <input type="datetime" class="form-control input-previous-button">
+                    </div>
+                </div>
+
+                <div class="form-group" style="display:flex">
+                    <div class="col-2"></div>
+                    &nbsp;
+                    &nbsp;
+                    <div>
+                        <button type="submit" class="btn btn-primary" title="Thêm mới yêu cầu" value="Create">Đăng ký</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="column col-md-1 col-mid">
+                <i class=" fas fa-play"></i>
+            </div>
+
+            <!--Cột bên phải dành cho thông tin nhân viên-->
+            <div class="column form-horizontal form-right col-md-4">
+                <!--Ảnh profile-->
+                <div class="form-group col-12 profile-img">
+                    <div class="img-profile">
+                        <img src="../../Assets/img/the-world.jpg" />
+                    </div>
+
+                </div>
+                <!--Thông tin profile-->
+                <div class="form-group input-group profile">
+                    <label class="control-label col-md-3 lb">Họ và tên</label>
+                    <input type="text" readonly class="form-control input-previous-button col-9">
+                </div>
+                <div class="form-group input-group profile">
+                    <label class="control-label col-md-3 lb">Vị trí</label>
+                    <input type="text" readonly class="form-control input-previous-button col-9">
+                </div>
+                <div class="form-group input-group profile">
+                    <label class="control-label col-md-3 lb">Phòng ban</label>
+                    <input type="text" readonly class="form-control input-previous-button col-9">
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

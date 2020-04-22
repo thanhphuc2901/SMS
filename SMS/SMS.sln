@@ -1,0 +1,37 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30011.22
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SMS.WebApi", "SMS.WebApi\SMS.WebApi.csproj", "{AE365685-ECB4-4A39-A79D-6E15864C3B5D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SMS.Data", "SMS.Data\SMS.Data.csproj", "{EDD7A54A-D5A0-4F27-8BC0-AF4FEDE394F3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SMS.Models", "SMS.Modela\SMS.Models.csproj", "{FD003E6B-454F-48B9-854F-BD59AE46B489}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{AE365685-ECB4-4A39-A79D-6E15864C3B5D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AE365685-ECB4-4A39-A79D-6E15864C3B5D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AE365685-ECB4-4A39-A79D-6E15864C3B5D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AE365685-ECB4-4A39-A79D-6E15864C3B5D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EDD7A54A-D5A0-4F27-8BC0-AF4FEDE394F3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EDD7A54A-D5A0-4F27-8BC0-AF4FEDE394F3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EDD7A54A-D5A0-4F27-8BC0-AF4FEDE394F3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EDD7A54A-D5A0-4F27-8BC0-AF4FEDE394F3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FD003E6B-454F-48B9-854F-BD59AE46B489}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FD003E6B-454F-48B9-854F-BD59AE46B489}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FD003E6B-454F-48B9-854F-BD59AE46B489}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FD003E6B-454F-48B9-854F-BD59AE46B489}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {6CFB0F22-93E3-4296-A5B1-41D5CCD6B287}
+	EndGlobalSection
+EndGlobal

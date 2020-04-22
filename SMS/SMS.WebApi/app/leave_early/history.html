@@ -1,0 +1,424 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <link href="../../Assets/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+
+    <!-- Custom styles for this page -->
+    <link href="~/Assets/vendor/datatables/dataTables.bootstrap4.min.css" rel="stylesheet">
+    <link href="../../Assets/css/sb-admin-2.min.css" rel="stylesheet" />
+    <link href="../../Assets/css/customize.css" rel="stylesheet" />
+</head>
+<body>
+    <!--Div chứa table dữ liệu-->
+    <div style="width:100%">
+        <div class="card-header py-3">
+            <h5 class="m-0 font-weight-bold text-primary">LỊCH SỬ CNV VỀ SỚM</h5>
+        </div>
+        <div class="row dataTables_wrapper dt-bootstrap4 card-body">
+            <div class="col-sm-12 col-md-4">
+                <div class="dataTable_filter_date input-group date" id="dataTable_filter_date">
+                    <label class="no-margin-bottom" style="padding-top: 5px">Từ ngày</label> &nbsp;
+                    <input type="text" class="form-control bg-light small from-date">
+                    <div class="input-group-append">
+                        <button class="btn btn-primary btn-from-date" id="datetime_from_picker" type="button">
+                            <i class="fas fa-calendar-day fa-sm"></i>
+                        </button>
+                    </div>
+                    &nbsp;
+                    &nbsp;
+                    &nbsp;
+                    &nbsp;
+                    &nbsp;
+                    &nbsp;
+                    <div></div>
+                    <label class="no-margin-bottom" style="padding-top: 5px">Đến ngày</label> &nbsp;
+                    <input type="text" class="form-control bg-light small to-date">
+                    <div class="input-group-append" style="display:inline">
+                        <button class="btn btn-primary btn-to-date" id="datetime_to_picker" type="button">
+                            <i class="fas fa-calendar-day fa-sm"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-12 col-md-8">
+                <div id="dataTable_filter" class="dataTables_filter">
+                    <label class="no-margin-bottom">
+                        Search<input type="search" class="form-control form-control-sm" placeholder="" aria-controls="dataTable">
+                    </label>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div style="width:100%; overflow-x:auto">
+        <!--Bảng dữ liệu Về sớm-->
+        <table class="table table-hover table-bordered">
+            <!--Tiêu đề cột-->
+            <tr class="table-heading">
+                <th colspan="2">Mã CNV</th>
+                <th>Vị trí</th>
+                <th>Phòng ban</th>
+                <th>Ca</th>
+                <th>Mục đích</th>
+                <th>Lí do</th>
+                <th>Thời gian ước tính</th>
+                <th colspan="2">Người tạo</th>
+                <th colspan="5">Phê duyệt</th>
+                <th colspan="4">Bảo vệ</th>
+                <th colspan="2">Chỉnh sửa</th>
+                <th>In ấn</th>
+            </tr>
+            <!--Row dữ liệu bảng về sớm-->
+            <!--@foreach (var item in Model)
+        {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.UserName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.FullName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Position)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Team)
+            </td>
+            <td>
+                @if (item.Shift == 0)
+                {
+                <p style="display:inherit">Hành chính</p>
+                }
+                else
+                {
+                @Html.DisplayFor(modelItem => item.Shift)
+                }
+            </td>
+            <td>
+                @if (item.Purpose.GetValueOrDefault(true))
+                {
+                <p style="display:inherit">Công việc</p>
+                }
+                else
+                {
+                <p style="display:inherit">Cá nhân</p>
+                }
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Reason)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.EstimatedDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.CreatedBy)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.CreatedDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ApprovedBy)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ApprovedDate)
+            </td>
+            <td>
+                @if (item.ApprovedStatus == 1)
+                {
+                <i class="fas fa-check-square" style="color:dodgerblue" title="Đã phê duyệt"></i>
+                }
+                else if (item.ApprovedStatus == 0)
+                {
+                <i class="fas fa-window-close" style="color:red" title="Không phê duyệt"></i>
+                }
+                else if (item.ApprovedStatus == 2)
+                {
+                <i class="fas fa-user-check" style="color:orange" title="Phê duyệt thay"></i>
+                }
+                else
+                {
+                <i class="fas fa-sync-alt" style="color:#4caf50" title="Chờ phê duyệt"></i>
+                }
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ApproverRemark)
+            </td>
+            <td>
+                @if (item.ApprovedStatus == 1 || item.ApprovedStatus == 2)
+                {
+                <button class="btn-cancel btn-danger btn-standard" title="Hủy bỏ"><i class="fas fa-lock"></i></button>
+                }
+                else if (item.ApprovedStatus == 3)
+                {
+                <button class="btn-edit btn-standard" title="Sửa"><i class="fas fa-cog"></i></button>
+                <button class="btn-danger btn-standard" title="Xóa"><i class="fas fa-times"></i></button>
+                }
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Guard)
+            </td>
+            <td>
+                @if (item.GuardStatus == 1)
+                {
+                <i class="fas fa-check-square" style="color:dodgerblue" title="Đã xác nhận"></i>
+                }
+                @*else if (item.GuardStatus == 0)
+                {
+                <i class="fas fa-window-close" style="color:red"></i>
+                }*@
+                else
+                {
+                <i class="fas fa-sync-alt" style="color:#4caf50" title="Đang chờ"></i>
+                }
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.GuardDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.GuardRemark)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ModifiedBy)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ModifiedDate)
+            </td>
+            <td>
+                <button class="btn-print btn-primary"><i class="fas fa-print"></i></button>
+            </td>
+        </tr>
+        }-->
+        </table>
+        <div class="card shadow mb-4">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <div id="dataTable_wrapper" class="dataTables_wrapper dt-bootstrap4">
+                    </div><div class="row">
+                        <div class="col-sm-12 col-md-5"><div class="dataTables_info" id="dataTable_info" role="status" aria-live="polite">Showing 1 to 10 of 57 entries</div></div>
+                        <div class="col-sm-12 col-md-7">
+                            <div class="dataTables_paginate paging_simple_numbers" id="dataTable_paginate">
+                                <ul class="pagination">
+                                    <li class="paginate_button page-item previous disabled" id="dataTable_previous"><a href="#" aria-controls="dataTable" data-dt-idx="0" tabindex="0" class="page-link">Previous</a></li>
+                                    <li class="paginate_button page-item active"><a href="#" aria-controls="dataTable" data-dt-idx="1" tabindex="0" class="page-link">1</a></li>
+                                    <li class="paginate_button page-item "><a href="#" aria-controls="dataTable" data-dt-idx="2" tabindex="0" class="page-link">2</a></li>
+                                    <li class="paginate_button page-item "><a href="#" aria-controls="dataTable" data-dt-idx="3" tabindex="0" class="page-link">3</a></li>
+                                    <li class="paginate_button page-item "><a href="#" aria-controls="dataTable" data-dt-idx="4" tabindex="0" class="page-link">4</a></li>
+                                    <li class="paginate_button page-item "><a href="#" aria-controls="dataTable" data-dt-idx="5" tabindex="0" class="page-link">5</a></li>
+                                    <li class="paginate_button page-item "><a href="#" aria-controls="dataTable" data-dt-idx="6" tabindex="0" class="page-link">6</a></li>
+                                    <li class="paginate_button page-item next" id="dataTable_next"><a href="#" aria-controls="dataTable" data-dt-idx="7" tabindex="0" class="page-link">Next</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <br />
+
+
+
+    <!--Table chứa dữ liệu đã xóa-->
+    <div style="width:100%">
+        <div class="card-header py-3">
+            <h5 class="m-0 font-weight-bold text-primary">CÁC YÊU CẦU ĐÃ XÓA</h5>
+        </div>
+        <div class="row dataTables_wrapper dt-bootstrap4 card-body">
+            <div class="col-sm-12">
+                <div id="dataTable_filter" class="dataTables_filter">
+                    <label class="no-margin-bottom">Search<input type="search" class="form-control form-control-sm" placeholder="" aria-controls="dataTable"></label>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div style="width:100%; overflow-x:auto">
+        <!--Bảng dữ liệu Về sớm đã xóa-->
+        <table class="table table-hover table-bordered">
+            <!--Tiêu đề cột-->
+            <tr class="table-heading">
+                <th colspan="2">Nhân viên</th>
+                <th>Vị trí</th>
+                <th>Phòng ban</th>
+                <th>Ca</th>
+                <th>Mục đích</th>
+                <th>Lí do</th>
+                <th>Thời gian ước tính</th>
+                <th colspan="2">Người tạo</th>
+                <th>Hoàn tác</th>
+            </tr>
+            <!--Row dữ liệu bảng về sớm đã xóa-->
+            <!--@*@foreach (var item in Model)
+        {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.UserName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.FullName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Position)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Team)
+            </td>
+            <td>
+                @if (item.Shift == 0)
+                {
+                <p style="display:inherit">Hành chính</p>
+                }
+                else
+                {
+                @Html.DisplayFor(modelItem => item.Shift)
+                }
+            </td>
+            <td>
+                @if (item.Purpose.GetValueOrDefault(true))
+                {
+                <p style="display:inherit">Công việc</p>
+                }
+                else
+                {
+                <p style="display:inherit">Cá nhân</p>
+                }
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Reason)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.EstimatedDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.CreatedBy)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.CreatedDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ApprovedBy)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ApprovedDate)
+            </td>
+            <td>
+                @if (item.ApprovedStatus == 1)
+                {
+                <i class="fas fa-check-square" style="color:dodgerblue" title="Đã phê duyệt"></i>
+                }
+                else if (item.ApprovedStatus == 0)
+                {
+                <i class="fas fa-window-close" style="color:red" title="Không phê duyệt"></i>
+                }
+                else if (item.ApprovedStatus == 2)
+                {
+                <i class="fas fa-user-check" style="color:orange" title="Phê duyệt thay"></i>
+                }
+                else
+                {
+                <i class="fas fa-sync-alt" style="color:#4caf50" title="Chờ phê duyệt"></i>
+                }
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ApproverRemark)
+            </td>
+            <td>
+                @if (item.ApprovedStatus == 1 || item.ApprovedStatus == 2)
+                {
+                <button class="btn-cancel btn-standard"><i class="fas fa-lock"></i> Hủy bỏ</button>
+                }
+                else if (item.ApprovedStatus == 3)
+                {
+                <button class="btn-danger btn-standard"><i class="fas fa-times"></i> Xóa</button>
+                }
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Guard)
+            </td>
+            <td>
+                @if (item.GuardStatus == 1)
+                {
+                <i class="fas fa-check-square" style="color:dodgerblue" title="Đã xác nhận"></i>
+                }*@
+                @*else if (item.GuardStatus == 0)
+                {
+                <i class="fas fa-window-close" style="color:red"></i>
+                }*@
+                @*else
+                {
+                <i class="fas fa-sync-alt" style="color:#4caf50" title="Đang chờ"></i>
+                }
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.GuardDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.GuardRemark)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ModifiedBy)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ModifiedDate)
+            </td>
+            <td>
+                <button class="btn-print btn-primary"><i class="fas fa-print"></i></button>
+            </td>
+        </tr>
+        }*@-->
+        </table>
+
+        <div class="card shadow mb-4">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <div id="dataTable_wrapper" class="dataTables_wrapper dt-bootstrap4">
+                    </div><div class="row">
+                        <div class="col-sm-12 col-md-5"><div class="dataTables_info" id="dataTable_info" role="status" aria-live="polite">Showing 1 to 10 of 57 entries</div></div>
+                        <div class="col-sm-12 col-md-7">
+                            <div class="dataTables_paginate paging_simple_numbers" id="dataTable_paginate">
+                                <ul class="pagination">
+                                    <li class="paginate_button page-item previous disabled" id="dataTable_previous"><a href="#" aria-controls="dataTable" data-dt-idx="0" tabindex="0" class="page-link">Previous</a></li>
+                                    <li class="paginate_button page-item active"><a href="#" aria-controls="dataTable" data-dt-idx="1" tabindex="0" class="page-link">1</a></li>
+                                    <li class="paginate_button page-item "><a href="#" aria-controls="dataTable" data-dt-idx="2" tabindex="0" class="page-link">2</a></li>
+                                    <li class="paginate_button page-item "><a href="#" aria-controls="dataTable" data-dt-idx="3" tabindex="0" class="page-link">3</a></li>
+                                    <li class="paginate_button page-item "><a href="#" aria-controls="dataTable" data-dt-idx="4" tabindex="0" class="page-link">4</a></li>
+                                    <li class="paginate_button page-item "><a href="#" aria-controls="dataTable" data-dt-idx="5" tabindex="0" class="page-link">5</a></li>
+                                    <li class="paginate_button page-item "><a href="#" aria-controls="dataTable" data-dt-idx="6" tabindex="0" class="page-link">6</a></li>
+                                    <li class="paginate_button page-item next" id="dataTable_next"><a href="#" aria-controls="dataTable" data-dt-idx="7" tabindex="0" class="page-link">Next</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- /.container-fluid -->
+    <!-- Bootstrap core JavaScript-->
+    <script src="../../Assets/vendor/jquery/jquery.min.js"></script>
+    <script src="../../Assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Core plugin JavaScript-->
+    <script src="../../Assets/vendor/jquery-easing/jquery.easing.min.js"></script>
+
+    <!-- Custom scripts for all pages-->
+    <script src="../../Assets/js/sb-admin-2.min.js"></script>
+
+    <!-- Page level plugins -->
+    <script src="../../Assets/vendor/datatables/jquery.dataTables.min.js"></script>
+    <script src="../../Assets/vendor/datatables/dataTables.bootstrap4.min.js"></script>
+
+    <!-- Page level custom scripts -->
+    <script src="../../Assets/js/demo/datatables-demo.js"></script>
+
+    <!--File js riêng-->
+    <script src="../../Assets/js/leave_early/common.js"></script>
+</body>
+</html>
