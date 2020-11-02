@@ -1,3 +1,473 @@
+@model Assets.Web.Models.DashboardViewModel
+
+@{
+    ViewBag.Title = "Trang chủ";
+}
+
+@section styles{
+    <link href="~/adminlte/css/jquery-datatables.min.css" rel="stylesheet" />
+    <link href="~/adminlte/css/jquery-confirm.css" rel="stylesheet" />
+    <link href="~/adminlte/css/sb-admin-2.min.css" rel="stylesheet" />
+    <link href="~/adminlte/css/customize.css" rel="stylesheet" />
+
+    <style>
+        label {
+            font-weight: 500 !important;
+            font-size: 0.9rem;
+        }
+    </style>
+}
+
+<section class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-lg-3 col-6" id="open-free-lap" style="cursor:pointer">
+                <div class="small-box bg-info">
+                    <div class="inner">
+                        <h3>@ViewBag.CountFree</h3>
+                        <p>Số máy sẵn sàng</p>
+                    </div>
+                    <div class="icon">
+                        <i class="ion ion-laptop"></i>
+                    </div>
+                    <a href="#" class="small-box-footer">Chi tiết <i class="fas fa-arrow-circle-right"></i></a>
+                </div>
+            </div>
+            <div class="col-lg-3 col-6" id="open-active-lap" style="cursor:pointer">
+                <!-- small box -->
+                <div class="small-box bg-success">
+                    <div class="inner">
+                        <h3>@ViewBag.CountActive</h3>
+                        <p>Số máy đang được mượn</p>
+                    </div>
+                    <div class="icon">
+                        <i class="ion ion-stats-bars"></i>
+                    </div>
+                    <a href="#" class="small-box-footer">Chi tiết <i class="fas fa-arrow-circle-right"></i></a>
+                </div>
+            </div>
+            <div class="col-lg-3 col-6" id="open-overdue-lap" style="cursor:pointer">
+                <!-- small box -->
+                <div class="small-box bg-warning">
+                    <div class="inner">
+                        <h3>0</h3>
+                        <p>Số máy quá hạn trả</p>
+                    </div>
+                    <div class="icon">
+                        <i class="ion ion-android-warning"></i>
+                    </div>
+                    <a href="#" class="small-box-footer">Chi tiết <i class="fas fa-arrow-circle-right"></i></a>
+                </div>
+            </div>
+            <div class="col-lg-3 col-6" id="open-break-lap" style="cursor:pointer">
+                <!-- small box -->
+                <div class="small-box bg-danger">
+                    <div class="inner">
+                        <h3>@ViewBag.CountBreak</h3>
+                        <p>Số máy cần sửa chữa</p>
+                    </div>
+                    <div class="icon">
+                        <i class="ion ion-ios-cog"></i>
+                    </div>
+                    <a href="#" class="small-box-footer">Chi tiết <i class="fas fa-arrow-circle-right"></i></a>
+                </div>
+            </div>
+        </div>
+
+        <!--Danh sách máy FREE-->
+        <div class="row collapse" id="tbl-free-lap">
+            <!-- Main content -->
+            <section class="content" style="width: 100%">
+                <div class="container-fluid">
+                    <div class="card">
+                        <!-- /.card-header -->
+                        <div class="card-body">
+                            <div class="row" style="padding-bottom: 10px">
+                                <div class="col-10">
+                                    <button id="btn-add" class="btn btn-sm btn-primary" data-toggle="modal" data-target="#registerModal">
+                                        <i class="fas fa-edit"></i> Đăng ký
+                                    </button>
+                                </div>
+                            </div>
+                            <div style="overflow: auto; border: 1px solid #dee2e6; max-height: 550px">
+                                <table id="equip-table" class="sortable table table-bordered table-hover" style="width:100% !important; text-align: center">
+                                    <thead style="background:#17a2b8; color:white; text-align:center">
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Tên máy</th>
+                                            <th>Số seri</th>
+                                            <th>Pin</th>
+                                            <th>Chuột</th>
+                                            <th>Sạc</th>
+                                        </tr>
+                                    </thead>
+                                    @foreach (var item in ViewBag.Free)
+                                    {
+                                        <tr>
+                                            <td>@item.ID</td>
+                                            <td>@item.Name</td>
+                                            <td>@item.Serial</td>
+                                            <td>
+                                                @if (@item.Battery == true)
+                                                {
+                                                    <i class="fas fa-check-square" style="color: dodgerblue"></i>
+                                                }
+                                            </td>
+                                            <td>
+                                                @if (@item.Mouse == true)
+                                                {
+                                                    <i class="fas fa-check-square" style="color: dodgerblue"></i>
+                                                }
+                                            </td>
+                                            <td>
+                                                @if (@item.Charger == true)
+                                                {
+                                                    <i class="fas fa-check-square" style="color: dodgerblue"></i>
+                                                }
+                                            </td>
+                                        </tr>
+                                    }
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!--Danh sách máy ĐANG ACTIVE-->
+        <div class="row collapse" id="tbl-active-lap">
+            <!-- Main content -->
+            <section class="content" style="width: 100%">
+                <div class="container-fluid">
+                    <div class="card">
+                        <!-- /.card-header -->
+                        <div class="card-body">
+                            <div style="overflow: auto; border: 1px solid #dee2e6; max-height: 550px">
+                                <table id="equip-table" class="sortable table table-bordered table-hover" style="width:100% !important; text-align: center">
+                                    <thead style="background:#28a745; color:white; text-align:center">
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Tên máy</th>
+                                            <th>Số seri</th>
+                                            <th>Pin</th>
+                                            <th>Chuột</th>
+                                            <th>Sạc</th>
+                                        </tr>
+                                    </thead>
+                                    @foreach (var item in ViewBag.Active)
+                                    {
+                                        <tr>
+                                            <td>@item.ID</td>
+                                            <td>@item.Name</td>
+                                            <td>@item.Serial</td>
+                                            <td>
+                                                @if (@item.Battery == true)
+                                                {
+                                                    <i class="fas fa-check-square" style="color: dodgerblue"></i>
+                                                }
+                                            </td>
+                                            <td>
+                                                @if (@item.Mouse == true)
+                                                {
+                                                    <i class="fas fa-check-square" style="color: dodgerblue"></i>
+                                                }
+                                            </td>
+                                            <td>
+                                                @if (@item.Charger == true)
+                                                {
+                                                    <i class="fas fa-check-square" style="color: dodgerblue"></i>
+                                                }
+                                            </td>
+                                        </tr>
+                                    }
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!--Danh sách máy BREAK-->
+        <div class="row collapse" id="tbl-break-lap">
+            <!-- Main content -->
+            <section class="content" style="width: 100%">
+                <div class="container-fluid">
+                    <div class="card">
+                        <!-- /.card-header -->
+                        <div class="card-body">
+                            <div style="overflow: auto; border: 1px solid #dee2e6; max-height: 550px">
+                                <table id="equip-table" class="sortable table table-bordered table-hover" style="width:100% !important; text-align: center">
+                                    <thead style="background:#dc3545; color:white; text-align:center">
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Tên máy</th>
+                                            <th>Số seri</th>
+                                            <th>Pin</th>
+                                            <th>Chuột</th>
+                                            <th>Sạc</th>
+                                        </tr>
+                                    </thead>
+                                    @foreach (var item in ViewBag.Break)
+                                    {
+                                        <tr>
+                                            <td>@item.ID</td>
+                                            <td>@item.Name</td>
+                                            <td>@item.Serial</td>
+                                            <td>
+                                                @if (@item.Battery == true)
+                                                {
+                                                    <i class="fas fa-check-square" style="color: dodgerblue"></i>
+                                                }
+                                            </td>
+                                            <td>
+                                                @if (@item.Mouse == true)
+                                                {
+                                                    <i class="fas fa-check-square" style="color: dodgerblue"></i>
+                                                }
+                                            </td>
+                                            <td>
+                                                @if (@item.Charger == true)
+                                                {
+                                                    <i class="fas fa-check-square" style="color: dodgerblue"></i>
+                                                }
+                                            </td>
+                                        </tr>
+                                    }
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="registerModal" role="dialog">
+        <div class="modal-dialog modal-xl">
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" style="color:dodgerblue">Đăng ký thiết bị</h4>
+                    <button type="button" class="close" data-dismiss="modal" style="color:red">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="col-md-12 row-form">
+                        <div class="column form-horizontal form-left col-md-7">
+                            <div class="form-group row-1 input-group">
+                                <label class="control-label col-2 lb">Mã CNV <span class="red">(*)</span></label>
+                                <div class="col-md-4 input-group input-group-sm">
+                                    <input class="form-control input-previous-button col-md-12" id="txtEmpCode" maxlength="8" autocomplete="off" />
+                                </div>
+                            </div>
+                            <div class="form-group input-group">
+                                <label class="control-label col-md-2 top-space">Lý do <span class="red">(*)</span></label>
+                                <div class="col-md-10 input-group-sm">
+                                    <textarea class="form-control col-md-12" style="resize: none" id="reason"></textarea>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="column col-md-1 col-mid"></div>
+
+                        <!--Cột bên phải dành cho thông tin nhân viên-->
+                        <div class="column form-horizontal form-right col-md-4">
+                            <!--Ảnh profile-->
+                            <div class="form-group col-12 profile-img">
+                                <div class="img-profile" id="emp_img">
+                                    <img id="img-profile" src="~/adminlte/img/the-world.jpg" />
+                                </div>
+                            </div>
+                            <!--Thông tin profile-->
+                            <div class="form-group input-group input-group-sm">
+                                <label class="col-3 top-space" for="FullName">Họ và tên</label>
+                                <input readonly class="form-control col-9 input-previous-button" id="txtFullName" />
+                            </div>
+                            <div class="form-group input-group input-group-sm">
+                                <label class="col-3 top-space" for="Positon">Vị trí</label>
+                                <input readonly class="form-control col-9 input-previous-button" id="txtPosition" />
+                            </div>
+                            <div class="form-group input-group input-group-sm">
+                                <label class="col-3 top-space" for="Positon">Phòng ban</label>
+                                <input readonly class="form-control col-9 input-previous-button" id="txtTeam" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="note col-12">
+                        <label class="control-label" style="color: dodgerblue"><u>Lưu ý</u>: <span style="color: #858796">&nbsp;Các trường <span style="color:red">(*)</span> bắt buộc phải nhập đầy đủ.</span></label>
+                    </div>
+                    <!--Đăng ký danh sách thiết bị-->
+                    <div class="bottom">
+                        <div class="form-horizontal col-12 row-add" style="width: 100%">
+                            <div class="items-container">
+                                <table class="table-bordered table table-hover table-sm" id="lap-items" style="font-family:Source Sans Pro">
+                                    <thead style="text-align:center; font-size:0.9rem">
+                                        <tr class="table-header-items">
+                                            <th></th>
+                                            <th>Máy tính <span class="red">(*)</span></th>
+                                            <th>Chuột</th>
+                                            <th>Sạc</th>
+                                            <th>Pin</th>
+                                            <th colspan="2">Thời gian trả máy <span class="red">(*)</span></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="text-align: center">
+                        <label id="add-row-items" class="btn-primary btn top-space btn-sm" title="Thêm hàng hóa khác" style="cursor: pointer; margin-top:8px;">
+                            <i class="fas fa-plus"></i>&nbsp; Thêm máy
+                        </label>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-sm btn-primary">Đăng ký</button>
+                    <button type="button" class="btn btn-sm btn-danger" data-dismiss="modal">Đóng</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- /.container-fluid -->
+</section>
+
+@section scripts {
+    <script src="~/adminlte/js/sortable.js"></script>
+    <script src="~/adminlte/js/jquery-ui.js"></script>
+    <script src="~/adminlte/js/jquery.min.js"></script>
+    <script src="~/adminlte/js/jquery-confirm.js"></script>
+    <script src="~/adminlte/plugins/datatables/jquery.dataTables.min.js"></script>
+
+    <script>
+        //user
+        var _user = {
+            init: function () {
+                _user.registerEvent();
+            },
+            registerEvent: function () {
+                _user.getUser();
+            },
+            getUser: function () {
+                var empCode = $("#txtEmpCode").val();
+                $.ajax({
+                    url: '/User/GetUserByCode?empCode=' + empCode,
+                    type: "GET",
+                    dataType: 'json',
+                    success: function (reponse) {
+                        console.log(reponse.data);
+                        if (reponse.status) {
+                            $('#txtFullName').val(reponse.data.FullName);
+                            $('#txtPosition').val(reponse.data.Position);
+                            $('#txtTeam').val(reponse.data.Team);
+                            $("#img-profile").attr("src", `/adminlte/pictures/${empCode}.jpg`);
+                        } else {
+                            alert("Mã nhân viên không tồn tại");
+                        }
+                    },
+                    error: function () {
+                    }
+                });
+            }
+        }
+        _user.init();
+
+        //Nhận sự kiện getUser khi gõ 7, 8 số
+        $('#txtEmpCode').keyup(function () {
+            var count = $('#txtEmpCode').val().length;
+            if (count == 7 || count == 8) {
+                _user.getUser();
+            } else {
+                $('#txtFullName').val("");
+                $('#txtPosition').val("");
+                $('#txtTeam').val("");
+            }
+        });
+    </script>
+
+    <script>
+        $("#add-row-items").off('click').on('click', function (e) {
+            var html = `<tr class="row-items">
+                                <td>
+                                    <label class="control-label btn btn-sm delete-items"><i class="fas fa-times-circle"></i></label>
+                                </td>
+                                <td class="input-group-sm">
+                                    <select class="form-control input-previous-button assetType">
+                                        <option value="0" selected>Hàng thường</option>
+                                        <option value="1">Hàng IT</option>
+                                        <option value="2">Hàng độc hại</option>
+                                    </select>
+                                </td>
+                                <td class="input-group-sm">
+                                    <input class="form-control input-previous-button serial" />
+                                </td>
+                                <td class="input-group-sm">
+                                    <input type="number" class="form-control input-previous-button quantity"/>
+                                </td>
+                                <td class="input-group-sm">
+                                    <input class="form-control input-previous-button unit" />
+                                </td>
+                                <td class="input-group-sm">
+                                    <input class="form-control datepicker returnDate" placeholder="Ngày" style="background: white" readonly autocomplete="off"/>
+                                </td>
+                                <td class="input-group-sm">
+                                    <input class="form-control timepicker returnTime" placeholder="Giờ" type="time"/>
+                                </td>
+                            </tr>`;
+            $('#lap-items > tbody:last-child').append(html);
+            $('.datepicker').datepicker({
+                dateFormat: 'dd/mm/yy'
+            });
+            $("#lap-items").on("click", ".delete-items", function () {
+                $(this).closest(".row-items").remove();
+            });
+        });
+        $("#lap-items").on("click", ".delete-items", function () {
+            $(this).closest(".row-items").remove();
+        });
+        $('.datepicker').datepicker({
+            dateFormat: 'dd/mm/yy'
+        });
+    </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var calendarEl = document.getElementById('calendar');
+            var calendar = new FullCalendar.Calendar(calendarEl, {
+                plugins: ['dayGrid', 'bootstrap'],
+                themeSystem: 'bootstrap'
+            });
+            calendar.render();
+        });
+
+        $('#open-free-lap').on("click", (event) => {
+            $("#tbl-free-lap").removeClass('collapse');
+            $("#tbl-active-lap").addClass('collapse');
+            $("#tbl-break-lap").addClass('collapse');
+            $("#tbl-overdue-lap").addClass('collapse');
+        });
+
+        $('#open-active-lap').on("click", (event) => {
+            $("#tbl-active-lap").removeClass('collapse');
+            $("#tbl-free-lap").addClass('collapse');
+            $("#tbl-break-lap").addClass('collapse');
+            $("#tbl-overdue-lap").addClass('collapse');
+        });
+
+        $('#open-break-lap').on("click", (event) => {
+            $("#tbl-break-lap").removeClass('collapse');
+            $("#tbl-active-lap").addClass('collapse');
+            $("#tbl-free-lap").addClass('collapse');
+            $("#tbl-overdue-lap").addClass('collapse');
+        });
+    </script>
+}
+
+-----------------------------------------------------------------------
+
 using Newtonsoft.Json;
 using SMS.Models.EF;
 using SMS.Web.Common;
