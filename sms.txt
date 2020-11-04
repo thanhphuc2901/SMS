@@ -226,23 +226,6 @@ namespace SMS.Web.Controllers
                 var goJSON = Request.Form.Get("GoOut");
                 var model = JsonConvert.DeserializeObject<Go_Out>(goJSON);
 
-                //var filePath = "";
-                ////file
-                //if (Request.Files.Count > 0)
-                //{
-                //    var file = Request.Files.Get("file");
-                //    var fileName = Path.GetFileName(file.FileName);
-                //    model.AttachedFile = fileName;
-
-                //    if (!Directory.Exists(Server.MapPath("~/Files")))
-                //    {
-                //        Directory.CreateDirectory(Server.MapPath("~/Files"));
-                //    }
-                //    filePath = Server.MapPath("~/Files/" + fileName);
-                //    file.SaveAs(filePath);
-
-                //}
-
                 var user = (UserLogin)Session[CommonConstants.USER_SESSION];
 
                 var GoOut = _dbContext.Go_Out.FirstOrDefault(t => t.ID == model.ID);
@@ -1462,3 +1445,164 @@ namespace SMS.Web.Controllers
 
 
 -------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-------------------Controller------------------------------------------
+[AuthorizeUser(AccessLevel = 2)]
+        [HttpPost]
+        public ActionResult Edit(Go_Out m)
+        {
+            try
+            {
+                var goJSON = Request.Form.Get("GoOut");
+                var model = JsonConvert.DeserializeObject<Go_Out>(goJSON);
+
+                var user = (UserLogin)Session[CommonConstants.USER_SESSION];
+
+                var GoOut = _dbContext.Go_Out.FirstOrDefault(t => t.ID == model.ID);
+                GoOut.ModifiedBy = user.EmpCode + "|" + user.FullName;
+                GoOut.ModifiedDate = DateTime.Now;
+                GoOut.Reason = model.Reason;
+                GoOut.Shift = model.Shift;
+                GoOut.Purpose = model.Purpose;
+                GoOut.EstimatedDateOut = model.EstimatedDateOut;
+                GoOut.EstimatedTimeOut = model.EstimatedTimeOut;
+                GoOut.EstimatedDateReturn = model.EstimatedDateReturn;
+                GoOut.EstimatedTimeReturn = model.EstimatedTimeReturn;
+                //if (filePath != "")
+                //{
+                //    GoOut.AttachedFile = model.AttachedFile;
+                //}
+
+                var listItemIDs = new List<int>();
+                foreach (var item in model.Go_Out_Items)
+                {
+                    if (item.ID == 0)
+                    {
+                        _dbContext.Go_Out_Items.Add(item);
+                    }
+                    else
+                    {
+                        listItemIDs.Add(item.ID);
+                        var bringItem = _dbContext.Go_Out_Items.FirstOrDefault(t => t.ID == item.ID);
+
+                        bringItem.Item = item.Item;
+                        bringItem.Serial = item.Serial;
+                        bringItem.Quantity = item.Quantity;
+                        bringItem.Unit = item.Unit;
+                        bringItem.AssetType = item.AssetType;
+                        bringItem.IsReturn = item.IsReturn;
+                        bringItem.ReturnDate = item.ReturnDate;
+                        bringItem.ReturnTime = item.ReturnTime;
+                        bringItem.ModifiedBy = user.EmpCode;
+                        bringItem.ModifiedDate = DateTime.Now;
+                    }
+                }
+                var itemsDelete = _dbContext.Go_Out_Items.Where(t => !listItemIDs.Contains(t.ID) && t.CatID == GoOut.ID);
+                _dbContext.Go_Out_Items.RemoveRange(itemsDelete);
+
+                _dbContext.SaveChanges();
+
+                return Content("Success");
+            }
+            catch (System.Exception ex)
+            {
+                return Content("Lỗi trong quá trình xử lý");
+            }
+        }
+        
+        
+       ------------------------------------ View -----------------------------
+       
+        //Edit
+        $('#register').on("click", (event) => {
+            event.preventDefault();
+            var data = new FormData();
+            var goOutObject = {};
+            goOutObject.ID = $('#txtID').val();
+            goOutObject.EmpCode = $('#txtEmpCodeGO').val();
+            goOutObject.Reason = $('#reason').val();
+            goOutObject.Shift = $('#shift').val();
+            goOutObject.Purpose = $('#purpose').val();
+            goOutObject.FullName = $('#txtFullNameGO').val();
+            goOutObject.Position = $('#txtPositionGO').val();
+            goOutObject.Team = $('#txtTeamGO').val();
+            goOutObject.EstimatedDateOut = $('#estimated_date_out').val();
+            goOutObject.EstimatedTimeOut = $('#estimated_time_out').val();
+            goOutObject.EstimatedDateReturn = $('#estimated_date_return').val();
+            goOutObject.EstimatedTimeReturn = $('#estimated_time_return').val();
+            goOutObject.Go_Out_Items = [];
+
+            $(".row-items").each((index, item) => {
+                var goOutItem = {};
+                goOutItem.ID = $(item).find('input[class*=ItemId]').val();
+                goOutItem.CatID = $('#txtID').val();
+                goOutItem.Item = $(item).find('input[class*=item]').val();
+                goOutItem.Serial = $(item).find('input[class*=serial]').val();
+                goOutItem.Quantity = $(item).find('input[class*=quantity]').val();
+                goOutItem.Unit = $(item).find('input[class*=unit]').val();
+                goOutItem.AssetType = $(item).find('select[class*=assetType]').val();
+                goOutItem.IsReturn = $(item).find('select[class*=isReturn]').val() === '1';
+                goOutItem.ReturnDate = $(item).find('input[class*=returnDate]').val();
+                goOutItem.ReturnTime = $(item).find('input[class*=returnTime]').val();
+
+                goOutObject.Go_Out_Items.push(goOutItem);
+            });
+            data.append("GoOut", JSON.stringify(goOutObject));
+            //goOutObject.append("file", $('#fileRedirectUrl')[0].files[0]);
+
+            $.confirm({
+                title: "Thông báo",
+                content: function () {
+                    var self = this;
+                    return $.ajax({
+                        url: "/GoOut/Edit",
+                        method: "POST",
+                        data: data,
+                        processData: false,
+                        contentType: false,
+                        success: function (mess) {
+                            if (mess === "Success") {
+                                window.location.href = "/GoOut/History"
+                            }
+                            else {
+                                self.setContent(mess);
+                            }
+                        }
+                    })
+                }
+            })
+
+        });
