@@ -1,1085 +1,3 @@
-@model Assets.Web.Models.DashboardViewModel
-
-@{
-    ViewBag.Title = "Trang chủ";
-}
-
-@section styles{
-    <link href="~/adminlte/css/jquery-datatables.min.css" rel="stylesheet" />
-    <link href="~/adminlte/css/jquery-confirm.css" rel="stylesheet" />
-    <link href="~/adminlte/css/sb-admin-2.min.css" rel="stylesheet" />
-    <link href="~/adminlte/css/customize.css" rel="stylesheet" />
-
-    <style>
-        label {
-            font-weight: 500 !important;
-            font-size: 0.9rem;
-        }
-    </style>
-}
-
-<section class="content">
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col-lg-3 col-6" id="open-free-lap" style="cursor:pointer">
-                <div class="small-box bg-info">
-                    <div class="inner">
-                        <h3>@ViewBag.CountFree</h3>
-                        <p>Số máy sẵn sàng</p>
-                    </div>
-                    <div class="icon">
-                        <i class="ion ion-laptop"></i>
-                    </div>
-                    <a href="#" class="small-box-footer">Chi tiết <i class="fas fa-arrow-circle-right"></i></a>
-                </div>
-            </div>
-            <div class="col-lg-3 col-6" id="open-active-lap" style="cursor:pointer">
-                <!-- small box -->
-                <div class="small-box bg-success">
-                    <div class="inner">
-                        <h3>@ViewBag.CountActive</h3>
-                        <p>Số máy đang được mượn</p>
-                    </div>
-                    <div class="icon">
-                        <i class="ion ion-stats-bars"></i>
-                    </div>
-                    <a href="#" class="small-box-footer">Chi tiết <i class="fas fa-arrow-circle-right"></i></a>
-                </div>
-            </div>
-            <div class="col-lg-3 col-6" id="open-overdue-lap" style="cursor:pointer">
-                <!-- small box -->
-                <div class="small-box bg-warning">
-                    <div class="inner">
-                        <h3>0</h3>
-                        <p>Số máy quá hạn trả</p>
-                    </div>
-                    <div class="icon">
-                        <i class="ion ion-android-warning"></i>
-                    </div>
-                    <a href="#" class="small-box-footer">Chi tiết <i class="fas fa-arrow-circle-right"></i></a>
-                </div>
-            </div>
-            <div class="col-lg-3 col-6" id="open-break-lap" style="cursor:pointer">
-                <!-- small box -->
-                <div class="small-box bg-danger">
-                    <div class="inner">
-                        <h3>@ViewBag.CountBreak</h3>
-                        <p>Số máy cần sửa chữa</p>
-                    </div>
-                    <div class="icon">
-                        <i class="ion ion-ios-cog"></i>
-                    </div>
-                    <a href="#" class="small-box-footer">Chi tiết <i class="fas fa-arrow-circle-right"></i></a>
-                </div>
-            </div>
-        </div>
-
-        <!--Danh sách máy FREE-->
-        <div class="row collapse" id="tbl-free-lap">
-            <!-- Main content -->
-            <section class="content" style="width: 100%">
-                <div class="container-fluid">
-                    <div class="card">
-                        <!-- /.card-header -->
-                        <div class="card-body">
-                            <div class="row" style="padding-bottom: 10px">
-                                <div class="col-10">
-                                    <button id="btn-add" class="btn btn-sm btn-primary" data-toggle="modal" data-target="#registerModal">
-                                        <i class="fas fa-edit"></i> Đăng ký
-                                    </button>
-                                </div>
-                            </div>
-                            <div style="overflow: auto; border: 1px solid #dee2e6; max-height: 550px">
-                                <table id="equip-table" class="sortable table table-bordered table-hover" style="width:100% !important; text-align: center">
-                                    <thead style="background:#17a2b8; color:white; text-align:center">
-                                        <tr>
-                                            <th>ID</th>
-                                            <th>Tên máy</th>
-                                            <th>Số seri</th>
-                                            <th>Pin</th>
-                                            <th>Chuột</th>
-                                            <th>Sạc</th>
-                                        </tr>
-                                    </thead>
-                                    @foreach (var item in ViewBag.Free)
-                                    {
-                                        <tr>
-                                            <td>@item.ID</td>
-                                            <td>@item.Name</td>
-                                            <td>@item.Serial</td>
-                                            <td>
-                                                @if (@item.Battery == true)
-                                                {
-                                                    <i class="fas fa-check-square" style="color: dodgerblue"></i>
-                                                }
-                                            </td>
-                                            <td>
-                                                @if (@item.Mouse == true)
-                                                {
-                                                    <i class="fas fa-check-square" style="color: dodgerblue"></i>
-                                                }
-                                            </td>
-                                            <td>
-                                                @if (@item.Charger == true)
-                                                {
-                                                    <i class="fas fa-check-square" style="color: dodgerblue"></i>
-                                                }
-                                            </td>
-                                        </tr>
-                                    }
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-        </div>
-
-        <!--Danh sách máy ĐANG ACTIVE-->
-        <div class="row collapse" id="tbl-active-lap">
-            <!-- Main content -->
-            <section class="content" style="width: 100%">
-                <div class="container-fluid">
-                    <div class="card">
-                        <!-- /.card-header -->
-                        <div class="card-body">
-                            <div style="overflow: auto; border: 1px solid #dee2e6; max-height: 550px">
-                                <table id="equip-table" class="sortable table table-bordered table-hover" style="width:100% !important; text-align: center">
-                                    <thead style="background:#28a745; color:white; text-align:center">
-                                        <tr>
-                                            <th>ID</th>
-                                            <th>Tên máy</th>
-                                            <th>Số seri</th>
-                                            <th>Pin</th>
-                                            <th>Chuột</th>
-                                            <th>Sạc</th>
-                                        </tr>
-                                    </thead>
-                                    @foreach (var item in ViewBag.Active)
-                                    {
-                                        <tr>
-                                            <td>@item.ID</td>
-                                            <td>@item.Name</td>
-                                            <td>@item.Serial</td>
-                                            <td>
-                                                @if (@item.Battery == true)
-                                                {
-                                                    <i class="fas fa-check-square" style="color: dodgerblue"></i>
-                                                }
-                                            </td>
-                                            <td>
-                                                @if (@item.Mouse == true)
-                                                {
-                                                    <i class="fas fa-check-square" style="color: dodgerblue"></i>
-                                                }
-                                            </td>
-                                            <td>
-                                                @if (@item.Charger == true)
-                                                {
-                                                    <i class="fas fa-check-square" style="color: dodgerblue"></i>
-                                                }
-                                            </td>
-                                        </tr>
-                                    }
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-        </div>
-
-        <!--Danh sách máy BREAK-->
-        <div class="row collapse" id="tbl-break-lap">
-            <!-- Main content -->
-            <section class="content" style="width: 100%">
-                <div class="container-fluid">
-                    <div class="card">
-                        <!-- /.card-header -->
-                        <div class="card-body">
-                            <div style="overflow: auto; border: 1px solid #dee2e6; max-height: 550px">
-                                <table id="equip-table" class="sortable table table-bordered table-hover" style="width:100% !important; text-align: center">
-                                    <thead style="background:#dc3545; color:white; text-align:center">
-                                        <tr>
-                                            <th>ID</th>
-                                            <th>Tên máy</th>
-                                            <th>Số seri</th>
-                                            <th>Pin</th>
-                                            <th>Chuột</th>
-                                            <th>Sạc</th>
-                                        </tr>
-                                    </thead>
-                                    @foreach (var item in ViewBag.Break)
-                                    {
-                                        <tr>
-                                            <td>@item.ID</td>
-                                            <td>@item.Name</td>
-                                            <td>@item.Serial</td>
-                                            <td>
-                                                @if (@item.Battery == true)
-                                                {
-                                                    <i class="fas fa-check-square" style="color: dodgerblue"></i>
-                                                }
-                                            </td>
-                                            <td>
-                                                @if (@item.Mouse == true)
-                                                {
-                                                    <i class="fas fa-check-square" style="color: dodgerblue"></i>
-                                                }
-                                            </td>
-                                            <td>
-                                                @if (@item.Charger == true)
-                                                {
-                                                    <i class="fas fa-check-square" style="color: dodgerblue"></i>
-                                                }
-                                            </td>
-                                        </tr>
-                                    }
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-        </div>
-    </div>
-
-    <!-- Modal -->
-    <div class="modal fade" id="registerModal" role="dialog">
-        <div class="modal-dialog modal-xl">
-            <!-- Modal content-->
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h4 class="modal-title" style="color:dodgerblue">Đăng ký thiết bị</h4>
-                    <button type="button" class="close" data-dismiss="modal" style="color:red">&times;</button>
-                </div>
-                <div class="modal-body">
-                    <div class="col-md-12 row-form">
-                        <div class="column form-horizontal form-left col-md-7">
-                            <div class="form-group row-1 input-group">
-                                <label class="control-label col-2 lb">Mã CNV <span class="red">(*)</span></label>
-                                <div class="col-md-4 input-group input-group-sm">
-                                    <input class="form-control input-previous-button col-md-12" id="txtEmpCode" maxlength="8" autocomplete="off" />
-                                </div>
-                            </div>
-                            <div class="form-group input-group">
-                                <label class="control-label col-md-2 top-space">Lý do <span class="red">(*)</span></label>
-                                <div class="col-md-10 input-group-sm">
-                                    <textarea class="form-control col-md-12" style="resize: none" id="reason"></textarea>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="column col-md-1 col-mid"></div>
-
-                        <!--Cột bên phải dành cho thông tin nhân viên-->
-                        <div class="column form-horizontal form-right col-md-4">
-                            <!--Ảnh profile-->
-                            <div class="form-group col-12 profile-img">
-                                <div class="img-profile" id="emp_img">
-                                    <img id="img-profile" src="~/adminlte/img/the-world.jpg" />
-                                </div>
-                            </div>
-                            <!--Thông tin profile-->
-                            <div class="form-group input-group input-group-sm">
-                                <label class="col-3 top-space" for="FullName">Họ và tên</label>
-                                <input readonly class="form-control col-9 input-previous-button" id="txtFullName" />
-                            </div>
-                            <div class="form-group input-group input-group-sm">
-                                <label class="col-3 top-space" for="Positon">Vị trí</label>
-                                <input readonly class="form-control col-9 input-previous-button" id="txtPosition" />
-                            </div>
-                            <div class="form-group input-group input-group-sm">
-                                <label class="col-3 top-space" for="Positon">Phòng ban</label>
-                                <input readonly class="form-control col-9 input-previous-button" id="txtTeam" />
-                            </div>
-                        </div>
-                    </div>
-                    <div class="note col-12">
-                        <label class="control-label" style="color: dodgerblue"><u>Lưu ý</u>: <span style="color: #858796">&nbsp;Các trường <span style="color:red">(*)</span> bắt buộc phải nhập đầy đủ.</span></label>
-                    </div>
-                    <!--Đăng ký danh sách thiết bị-->
-                    <div class="bottom">
-                        <div class="form-horizontal col-12 row-add" style="width: 100%">
-                            <div class="items-container">
-                                <table class="table-bordered table table-hover table-sm" id="lap-items" style="font-family:Source Sans Pro">
-                                    <thead style="text-align:center; font-size:0.9rem">
-                                        <tr class="table-header-items">
-                                            <th></th>
-                                            <th>Máy tính <span class="red">(*)</span></th>
-                                            <th>Chuột</th>
-                                            <th>Sạc</th>
-                                            <th>Pin</th>
-                                            <th colspan="2">Thời gian trả máy <span class="red">(*)</span></th>
-                                        </tr>
-                                    </thead>
-                                    <tbody></tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div style="text-align: center">
-                        <label id="add-row-items" class="btn-primary btn top-space btn-sm" title="Thêm hàng hóa khác" style="cursor: pointer; margin-top:8px;">
-                            <i class="fas fa-plus"></i>&nbsp; Thêm máy
-                        </label>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="submit" class="btn btn-sm btn-primary">Đăng ký</button>
-                    <button type="button" class="btn btn-sm btn-danger" data-dismiss="modal">Đóng</button>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- /.container-fluid -->
-</section>
-
-@section scripts {
-    <script src="~/adminlte/js/sortable.js"></script>
-    <script src="~/adminlte/js/jquery-ui.js"></script>
-    <script src="~/adminlte/js/jquery.min.js"></script>
-    <script src="~/adminlte/js/jquery-confirm.js"></script>
-    <script src="~/adminlte/plugins/datatables/jquery.dataTables.min.js"></script>
-
-    <script>
-        //user
-        var _user = {
-            init: function () {
-                _user.registerEvent();
-            },
-            registerEvent: function () {
-                _user.getUser();
-            },
-            getUser: function () {
-                var empCode = $("#txtEmpCode").val();
-                $.ajax({
-                    url: '/User/GetUserByCode?empCode=' + empCode,
-                    type: "GET",
-                    dataType: 'json',
-                    success: function (reponse) {
-                        console.log(reponse.data);
-                        if (reponse.status) {
-                            $('#txtFullName').val(reponse.data.FullName);
-                            $('#txtPosition').val(reponse.data.Position);
-                            $('#txtTeam').val(reponse.data.Team);
-                            $("#img-profile").attr("src", `/adminlte/pictures/${empCode}.jpg`);
-                        } else {
-                            alert("Mã nhân viên không tồn tại");
-                        }
-                    },
-                    error: function () {
-                    }
-                });
-            }
-        }
-        _user.init();
-
-        //Nhận sự kiện getUser khi gõ 7, 8 số
-        $('#txtEmpCode').keyup(function () {
-            var count = $('#txtEmpCode').val().length;
-            if (count == 7 || count == 8) {
-                _user.getUser();
-            } else {
-                $('#txtFullName').val("");
-                $('#txtPosition').val("");
-                $('#txtTeam').val("");
-            }
-        });
-    </script>
-
-    <script>
-        $("#add-row-items").off('click').on('click', function (e) {
-            var html = `<tr class="row-items">
-                                <td>
-                                    <label class="control-label btn btn-sm delete-items"><i class="fas fa-times-circle"></i></label>
-                                </td>
-                                <td class="input-group-sm">
-                                    <select class="form-control input-previous-button assetType">
-                                        <option value="0" selected>Hàng thường</option>
-                                        <option value="1">Hàng IT</option>
-                                        <option value="2">Hàng độc hại</option>
-                                    </select>
-                                </td>
-                                <td class="input-group-sm">
-                                    <input class="form-control input-previous-button serial" />
-                                </td>
-                                <td class="input-group-sm">
-                                    <input type="number" class="form-control input-previous-button quantity"/>
-                                </td>
-                                <td class="input-group-sm">
-                                    <input class="form-control input-previous-button unit" />
-                                </td>
-                                <td class="input-group-sm">
-                                    <input class="form-control datepicker returnDate" placeholder="Ngày" style="background: white" readonly autocomplete="off"/>
-                                </td>
-                                <td class="input-group-sm">
-                                    <input class="form-control timepicker returnTime" placeholder="Giờ" type="time"/>
-                                </td>
-                            </tr>`;
-            $('#lap-items > tbody:last-child').append(html);
-            $('.datepicker').datepicker({
-                dateFormat: 'dd/mm/yy'
-            });
-            $("#lap-items").on("click", ".delete-items", function () {
-                $(this).closest(".row-items").remove();
-            });
-        });
-        $("#lap-items").on("click", ".delete-items", function () {
-            $(this).closest(".row-items").remove();
-        });
-        $('.datepicker').datepicker({
-            dateFormat: 'dd/mm/yy'
-        });
-    </script>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            var calendarEl = document.getElementById('calendar');
-            var calendar = new FullCalendar.Calendar(calendarEl, {
-                plugins: ['dayGrid', 'bootstrap'],
-                themeSystem: 'bootstrap'
-            });
-            calendar.render();
-        });
-
-        $('#open-free-lap').on("click", (event) => {
-            $("#tbl-free-lap").removeClass('collapse');
-            $("#tbl-active-lap").addClass('collapse');
-            $("#tbl-break-lap").addClass('collapse');
-            $("#tbl-overdue-lap").addClass('collapse');
-        });
-
-        $('#open-active-lap').on("click", (event) => {
-            $("#tbl-active-lap").removeClass('collapse');
-            $("#tbl-free-lap").addClass('collapse');
-            $("#tbl-break-lap").addClass('collapse');
-            $("#tbl-overdue-lap").addClass('collapse');
-        });
-
-        $('#open-break-lap').on("click", (event) => {
-            $("#tbl-break-lap").removeClass('collapse');
-            $("#tbl-active-lap").addClass('collapse');
-            $("#tbl-free-lap").addClass('collapse');
-            $("#tbl-overdue-lap").addClass('collapse');
-        });
-    </script>
-}
-
------------------------------------------------------------------------
-
-using Newtonsoft.Json;
-using SMS.Models.EF;
-using SMS.Web.Common;
-using SMS.Web.Models;
-using System;
-using System.Collections.Generic;
-using System.Data.Entity;
-using System.IO;
-using System.Linq;
-using System.Net.Http;
-using System.Web;
-using System.Web.Mvc;
-using System.Web.Script.Serialization;
-
-namespace SMS.Web.Controllers
-{
-    public class GuestController : BaseController
-    {
-        private SMSDbContext dbContext;
-
-        public GuestController()
-        {
-            dbContext = new SMSDbContext();
-        }
-        public ActionResult History()
-        {
-            return View();
-        }
-
-        /// <summary>
-        /// Lịch sử khách vào ra
-        /// </summary>
-        /// <param name="from"></param>
-        /// <param name="to"></param>
-        /// <param name="company"></param>
-        /// <param name="team"></param>
-        /// <param name="employee"></param>
-        /// <returns></returns>
-        [HttpPost]
-        public ActionResult FetchGuestDataHistory(string from = null, string to = null, string company = "", string team = "", string employee = "")
-        {
-            try
-            {
-                ViewBag.from = from;
-                ViewBag.to = to;
-                ViewBag.employee = employee;
-                ViewBag.team = team;
-                ViewBag.company = company;
-
-                if (from == null || to == null)
-                {
-                    from = DateTime.Now.ToString("dd/MM/yyyy");
-                    to = DateTime.Now.ToString("dd/MM/yyyy");
-                }
-
-                var user = (UserLogin)Session[CommonConstants.USER_SESSION];
-                var items = dbContext.Guest_Item.ToList();
-                var tName = dbContext.Users.Include(t => t.Team).First(u => u.ID == user.ID).Team.Name;
-                var currentRole = (HttpContext.User as CustomPrincipal).PriorityRole;
-                var isGuard = (HttpContext.User as CustomPrincipal).RoleName == "Guard";
-
-                var model = dbContext.Guests.Where(g => currentRole >= 4 || isGuard || g.Team == tName).OrderByDescending(x => x.EstimatedDateIn).ToList();
-
-                var result = Json(new { data = model, items, currentRole, isGuard, recordsTotal = model.Count(), recordsFiltered = model.Count() });
-                result.MaxJsonLength = int.MaxValue;
-                return result;
-            }
-            catch (Exception)
-            {
-                throw;
-            }
-        }
-
-        /// <summary>
-        /// Load danh sách phê duyệt hàng cho SMT, FST
-        /// </summary>
-        /// <param name="type"></param>
-        /// <returns></returns>
-        [HttpPost]
-        public ActionResult FetchGuestData(string type)
-        {
-            var user = (UserLogin)Session[CommonConstants.USER_SESSION];
-            var tName = dbContext.Users.Include(t => t.Team).First(u => u.ID == user.ID).Team.Name;
-
-            var currentRole = (HttpContext.User as CustomPrincipal).PriorityRole;
-
-            var model = new List<Guest>();
-
-            if (type == "SMT")
-            {
-                model = dbContext.Guests
-                    .Where(g => dbContext.Guest_Item.Any(i => i.CatID == g.ID && i.AssetType == 1 && i.ITT_Status == null))
-                    .OrderByDescending(x => x.CreatedDate).ToList();
-            }
-            else if (type == "FST")
-            {
-                model = dbContext.Guests
-                   .Where(g => dbContext.Guest_Item.Any(i => i.CatID == g.ID && i.AssetType == 2 && i.FST_Status == null))
-                   .OrderByDescending(x => x.CreatedDate).ToList();
-            }
-
-            if (type == "SMT" && currentRole < 4 && (tName != "SMT" || tName != "ITT"))
-            {
-                model.Clear();
-            }
-
-            if (type == "FST" && currentRole < 4 && tName != "FST")
-            {
-                model.Clear();
-            }
-
-            return Json(new { data = model, currentRole, recordsTotal = model.Count(), recordsFiltered = model.Count() });
-        }
-
-        /// <summary>
-        /// Load view tạo mới
-        /// </summary>
-        /// <returns></returns>
-        /// 
-        [AuthorizeUser(AccessLevel = 1)]
-        public ActionResult Create()
-        {
-            return View();
-        }
-
-        /// <summary>
-        /// Load view tạo mới khách ca đêm
-        /// </summary>
-        /// <returns></returns>
-        /// 
-        [AuthorizeUser(AccessLevel = 1)]
-        public ActionResult CreateNightShift()
-        {
-            return View();
-        }
-
-        /// <summary>
-        /// Tạo mới khách ca đêm
-        /// </summary>
-        /// <param name="m"></param>
-        /// <returns></returns>
-        /// 
-        [AuthorizeUser(AccessLevel = 1)]
-        [HttpPost]
-        public ActionResult CreateNightShift(Guest m)
-        {
-            var guest = Request.Form.Get("guest");
-            var model = JsonConvert.DeserializeObject<List<Guest>>(guest);
-
-            //// Lưu khách nhiều ngày với định dạng dd/MM/yyyy
-            //var user = (UserLogin)Session[CommonConstants.USER_SESSION];
-            //foreach (var item in model)
-            //{
-            //    item.CreatedBy = user.EmpCode + "|" + user.FullName;
-            //    //file
-            //    if (Request.Files.Count > 0)
-            //    {
-            //        var file = Request.Files.Get("file");
-            //        var fileName = Path.GetFileName(file.FileName);
-            //        item.FileRedirectURL = fileName;
-
-            //        if (!Directory.Exists(Server.MapPath("~/Files")))
-            //        {
-            //            Directory.CreateDirectory(Server.MapPath("~/Files"));
-            //        }
-            //        var filePath = Server.MapPath("~/Files/" + fileName);
-            //        file.SaveAs(filePath);
-            //    }
-            //}
-            dbContext.Guests.AddRange(model);
-
-            dbContext.SaveChanges();
-
-            return Content("Success");
-        }
-
-        /// <summary>
-        /// Tạo mới
-        /// </summary>
-        /// <param name="m"></param>
-        /// <returns></returns>
-        /// 
-        [AuthorizeUser(AccessLevel = 1)]
-        [HttpPost]
-        public ActionResult Create(Guest m)
-        {
-            var guest = Request.Form.Get("guest");
-            var excludeDate = Request.Form.Get("excludeDate");
-            var model = JsonConvert.DeserializeObject<Guest>(guest);
-
-            //file
-            if (Request.Files.Count > 0)
-            {
-                var file = Request.Files.Get("file");
-                var fileName = Path.GetFileName(file.FileName);
-                model.FileRedirectURL = fileName;
-
-                if (!Directory.Exists(Server.MapPath("~/Files")))
-                {
-                    Directory.CreateDirectory(Server.MapPath("~/Files"));
-                }
-                var filePath = Server.MapPath("~/Files/" + fileName);
-                file.SaveAs(filePath);
-            }
-
-            string json = Newtonsoft.Json.JsonConvert.SerializeObject(model);
-
-            var guests = new List<Guest>();
-
-            // Lưu khách nhiều ngày với định dạng dd/MM/yyyy
-            saveGuest(model.EstimatedDateIn, model.EstimatedDateOut, excludeDate, json, ref guests);
-
-            dbContext.Guests.AddRange(guests);
-
-            dbContext.SaveChanges();
-
-            return Content("Success");
-        }
-
-
-        private string FormatDate(string date)
-        {
-            var strs = date.Split('/');
-            return strs[1] + "/" + strs[0] + "/" + strs[2];
-        }
-
-        /// <summary>
-        /// Hàm lưu đăng ký khách (bao gồm cả ngắn hạn cả dài hạn)
-        /// </summary>
-        /// <param name="StartDate"></param>
-        /// <param name="EndDate"></param>
-        /// <param name="excludeDate"></param>
-        /// <param name="model"></param>
-        /// <param name="guests"></param>
-        private void saveGuest(string StartDate, string EndDate, string excludeDate, string model, ref List<Guest> guests)
-        {
-            var startdate = DateTime.ParseExact(StartDate, "dd/MM/yyyy", null);
-
-            var enddate = DateTime.ParseExact(EndDate, "dd/MM/yyyy", null);
-
-            var dateDiff = (enddate - startdate).TotalDays;
-
-            var newGuest = Newtonsoft.Json.JsonConvert.DeserializeObject<Guest>(model);
-            var excludeDates = excludeDate.Split(',');
-
-            if (excludeDates.Contains(StartDate))
-            {
-                if (StartDate == EndDate)
-                {
-                    return;
-                }
-                else
-                {
-                    var newStartDate = startdate.AddDays(1).ToString("dd/MM/yyyy");
-                    saveGuest(newStartDate, EndDate, excludeDate, model, ref guests);
-                }
-            }
-            else
-            {
-                var newStartDate = startdate.AddDays(1).ToString("dd/MM/yyyy");
-
-                if (dateDiff >= 1)
-                {
-                    newGuest.EstimatedDateIn = StartDate;
-                    newGuest.EstimatedDateOut = StartDate;
-                    newGuest.CreatedDate = System.DateTime.Now;
-                    var user = (UserLogin)Session[CommonConstants.USER_SESSION];
-                    newGuest.CreatedBy = user.EmpCode + "|" + user.FullName;
-                    newGuest.Status = false;
-
-                    guests.Add(newGuest);
-
-                    saveGuest(newStartDate, EndDate, excludeDate, model, ref guests);
-                }
-                else
-                {
-                    newGuest.EstimatedDateIn = StartDate;
-                    newGuest.EstimatedDateOut = StartDate;
-                    newGuest.CreatedDate = System.DateTime.Now;
-                    var user = (UserLogin)Session[CommonConstants.USER_SESSION];
-                    newGuest.CreatedBy = user.EmpCode + "|" + user.FullName;
-                    newGuest.Status = false;
-
-                    guests.Add(newGuest);
-                }
-            }
-
-        }
-
-        /// <summary>
-        /// Hàm show thông tin chi tiết đăng ký khách
-        /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
-        public ActionResult Detail(int id)
-        {
-            var guest = dbContext.Guests.Find(id);
-            var guestitems = dbContext.Guest_Item.Where(t => t.CatID == id && t.Quantity != null && t.Item != null).ToList();
-            guest.Guest_Item = guestitems;
-            return View(guest);
-        }
-
-        /// <summary>
-        /// Load view Sửa
-        /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
-        [AuthorizeUser(AccessLevel = 1)]
-        public ActionResult Edit(int id)
-        {
-            var guest = dbContext.Guests.Find(id);
-            var guest_items = dbContext.Guest_Item.Where(t => t.CatID == id).ToList();
-            guest.Guest_Item = guest_items;
-            return View(guest);
-        }
-
-        /// <summary>
-        /// Thực thi Sửa
-        /// </summary>
-        /// <param name="m"></param>
-        /// <returns></returns>
-        [AuthorizeUser(AccessLevel = 1)]
-        [HttpPost]
-        public ActionResult Edit(Guest m)
-        {
-            try
-            {
-                var guestJSON = Request.Form.Get("guest");
-                var model = JsonConvert.DeserializeObject<Guest>(guestJSON);
-
-                var filePath = "";
-                //file
-                if (Request.Files.Count > 0)
-                {
-                    var file = Request.Files.Get("file");
-                    var fileName = Path.GetFileName(file.FileName);
-                    model.FileRedirectURL = fileName;
-
-                    if (!Directory.Exists(Server.MapPath("~/Files")))
-                    {
-                        Directory.CreateDirectory(Server.MapPath("~/Files"));
-                    }
-                    filePath = Server.MapPath("~/Files/" + fileName);
-                    file.SaveAs(filePath);
-
-                }
-
-                var user = (UserLogin)Session[CommonConstants.USER_SESSION];
-
-                var guest = dbContext.Guests.FirstOrDefault(t => t.ID == model.ID);
-                guest.ModifiedBy = user.EmpCode + "|" + user.FullName;
-                guest.ModifiedDate = DateTime.Now;
-
-                guest.Type = model.Type;
-                guest.IO = model.IO;
-                guest.FullName = model.FullName;
-                guest.IDCard = model.IDCard;
-                guest.Company = model.Company;
-                guest.NumbersOfPerson = model.NumbersOfPerson;
-                guest.Visa = model.Visa;
-                guest.Hotel = model.Hotel;
-                guest.Purpose = model.Purpose;
-                guest.TransportNo = model.TransportNo;
-                guest.EstimatedDateIn = model.EstimatedDateIn;
-                guest.EstimatedTimeIn = model.EstimatedTimeIn;
-                guest.EstimatedDateOut = model.EstimatedDateOut;
-                guest.EstimatedTimeOut = model.EstimatedTimeOut;
-                guest.KVPNo = model.KVPNo;
-                guest.Check_Guest = model.Check_Guest;
-                if (filePath != "")
-                {
-                    guest.FileRedirectURL = model.FileRedirectURL;
-                }
-
-                var listItemIDs = new List<int>();
-                foreach (var item in model.Guest_Item)
-                {
-                    if (item.ID == 0)
-                    {
-                        dbContext.Guest_Item.Add(item);
-                    }
-                    else
-                    {
-                        listItemIDs.Add(item.ID);
-                        var bringItem = dbContext.Guest_Item.FirstOrDefault(t => t.ID == item.ID);
-
-                        bringItem.Item = item.Item;
-                        bringItem.Serial = item.Serial;
-                        bringItem.Quantity = item.Quantity;
-                        bringItem.Unit = item.Unit;
-                        bringItem.AssetType = item.AssetType;
-                        bringItem.IsReturn = item.IsReturn;
-                        bringItem.ReturnDate = item.ReturnDate;
-                        bringItem.ReturnTime = item.ReturnTime;
-                        bringItem.ModifiedBy = user.EmpCode;
-                        bringItem.ModifiedDate = DateTime.Now;
-                    }
-                }
-                var itemsDelete = dbContext.Guest_Item.Where(t => !listItemIDs.Contains(t.ID) && t.CatID == guest.ID);
-                dbContext.Guest_Item.RemoveRange(itemsDelete);
-
-                dbContext.SaveChanges();
-
-                return Content("Success");
-            }
-            catch (System.Exception ex)
-            {
-                return Content("Lỗi trong quá trình xử lý");
-            }
-        }
-
-        [AuthorizeUser(AccessLevel = 2)]
-        [HttpGet]
-        public ActionResult Delete(int id)
-        {
-            var guest_items = dbContext.Guest_Item.Where(t => t.CatID == id).ToList();
-            dbContext.Guest_Item.RemoveRange(guest_items);
-
-            var guest = dbContext.Guests.FirstOrDefault(t => t.ID == id);
-            dbContext.Guests.Remove(guest);
-
-            dbContext.SaveChanges();
-
-            return Content("Success");
-        }
-
-        [AuthorizeUser(AccessLevel = 3)]
-        [HttpGet]
-        public ActionResult Cancel(int id)
-        {
-
-            var guest = dbContext.Guests.FirstOrDefault(t => t.ID == id);
-            guest.Cancel = true;
-
-            dbContext.SaveChanges();
-
-            return Content("Success");
-        }
-
-        //Load view ITT phê duyệt đăng ký khách
-        [AuthorizeUser(AccessLevel = 3, ExceptRoleName = "FM")]
-        public ActionResult ITTApproveDetail(int id)
-        {
-            var guest = dbContext.Guests.Find(id);
-            var guest_items = dbContext.Guest_Item.Where(t => t.CatID == id && t.AssetType == 1).OrderByDescending(t => t.CreatedDate).ToList();
-
-            var user = (UserLogin)Session[CommonConstants.USER_SESSION];
-            var tName = dbContext.Users.Include(t => t.Team).First(u => u.ID == user.ID).Team.Name;
-
-            var isAdmin = (HttpContext.User as CustomPrincipal).PriorityRole >= 4;
-
-            if (!isAdmin && (tName != "SMT" || tName != "ITT"))
-            {
-                guest_items.Clear();
-            }
-
-            guest.Guest_Item = guest_items;
-            return View(guest);
-        }
-
-        /// <summary>
-        /// Load view chi tiết ITT phê duyệt
-        /// </summary>
-        /// <returns></returns>
-        [AuthorizeUser(AccessLevel = 3, ExceptRoleName = "FM")]
-        public ActionResult ITTApprove()
-        {
-            return View();
-        }
-
-        /// <summary>
-        /// Thực thi ITT phê duyệt
-        /// </summary>
-        /// <param name="id"></param>
-        /// <param name="itemId"></param>
-        /// <param name="remark"></param>
-        /// <param name="status"></param>
-        /// <returns></returns>
-        [AuthorizeUser(AccessLevel = 3, ExceptRoleName = "FM")]
-        [HttpPost]
-        public ActionResult ITTApprove(int id, int itemId, string remark, int status)
-        {
-            var guest = dbContext.Guests.Find(id);
-
-            var guestItems = dbContext.Guest_Item.Find(itemId);
-            var user = (UserLogin)Session[CommonConstants.USER_SESSION];
-            guestItems.ITT = user.EmpCode + "|" + user.FullName;
-            guestItems.ITT_Date = DateTime.Now;
-            guestItems.ITT_Remark = remark;
-            guestItems.ITT_Status = status;
-
-            var gStatus = false;
-            foreach (var item in dbContext.Guest_Item.Where(t => t.CatID == id))
-            {
-                if (item.FST_Status != null && item.FST_Status.Value == 1)
-                {
-                    gStatus = true;
-                }
-                else
-                {
-                    gStatus = false;
-                    break;
-                }
-            }
-            guest.Status = gStatus;
-
-            dbContext.SaveChanges();
-            return Content(JsonConvert.SerializeObject(guestItems), "application/json");
-        }
-
-        [AuthorizeUser(AccessLevel = 3, ExceptRoleName = "FM")]
-        //FST
-        public ActionResult FSTApproveDetail(int id)
-        {
-            var guest = dbContext.Guests.Find(id);
-            var guestItems = dbContext.Guest_Item.Where(t => t.CatID == id && t.AssetType == 2).OrderByDescending(t => t.CreatedDate).ToList();
-
-            var user = (UserLogin)Session[CommonConstants.USER_SESSION];
-            var tName = dbContext.Users.Include(t => t.Team).First(u => u.ID == user.ID).Team.Name;
-
-
-            var isAdmin = (HttpContext.User as CustomPrincipal).PriorityRole >= 4;
-
-            if (!isAdmin && tName != "FST")
-            {
-                guestItems.Clear();
-            }
-
-            guest.Guest_Item = guestItems;
-            return View(guest);
-        }
-
-        [AuthorizeUser(AccessLevel = 3, ExceptRoleName = "FM")]
-        public ActionResult FSTApprove()
-        {
-            return View();
-        }
-
-        [AuthorizeUser(AccessLevel = 3, ExceptRoleName = "FM")]
-        [HttpPost]
-        public ActionResult FSTApprove(int id, int itemId, string remark, int status)
-        {
-            var guest = dbContext.Guests.Find(id);
-
-            var guestItems = dbContext.Guest_Item.Find(itemId);
-            var user = (UserLogin)Session[CommonConstants.USER_SESSION];
-            guestItems.FST = user.EmpCode + "|" + user.FullName;
-            guestItems.FST_Date = DateTime.Now;
-            guestItems.FST_Remark = remark;
-            guestItems.FST_Status = status;
-
-            var gStatus = false;
-            foreach (var item in dbContext.Guest_Item.Where(t => t.CatID == id))
-            {
-                if ((item.ITT_Status != null && item.ITT_Status.Value == 1) || (item.SMT_Status != null && item.SMT_Status.Value == 1))
-                {
-                    gStatus = true;
-                }
-                else
-                {
-                    gStatus = false;
-                    break;
-                }
-            }
-            guest.Status = gStatus;
-
-            dbContext.SaveChanges();
-            return Content(JsonConvert.SerializeObject(guestItems), "application/json");
-        }
-
-        /// <summary>
-        /// In xác nhận gặp mặt khách
-        /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
-        public ActionResult GuestReport(int id)
-        {
-            var guest = dbContext.Guests.Find(id);
-            var guestItems = dbContext.Guest_Item.Where(t => t.CatID == id).ToList();
-            guest.Guest_Item = guestItems;
-            return View(guest);
-        }
-
-        /// <summary>
-        /// Dowload file đính kèm
-        /// </summary>
-        /// <param name="filename"></param>
-        /// <returns></returns>
-        public ActionResult GuestFileDownload(string filename)
-        {
-            var file = Server.MapPath("~/Files/") + filename;
-            return File(file, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", filename);
-        }
-
-        /// <summary>
-        /// Dowload template đăng ký khách
-        /// </summary>
-        /// <returns></returns>
-        public ActionResult TemplateGuest()
-        {
-            var file = Server.MapPath("~/Files/Form excel mẫu cho khách.xlsx");
-            return File(file, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "File mẫu.xlsx");
-
-        }
-    }
-}
-
-
-
----------------------------------------------------------------------Go_Out_Controller
-
-
 using Newtonsoft.Json;
 using SMS.Models.DAO;
 using SMS.Models.EF;
@@ -1250,9 +168,8 @@ namespace SMS.Web.Controllers
                 {
                     return Content("Bạn cần nhập đầy đủ thông tin");
                 }
-
-                model.CreatedDate = DateTime.Now;
                 var user = (UserLogin)Session[CommonConstants.USER_SESSION];
+                model.CreatedDate = DateTime.Now;
                 model.CreatedBy = user.EmpCode + "|" + user.FullName;
 
                 ////file
@@ -1269,7 +186,6 @@ namespace SMS.Web.Controllers
                 //    var filePath = Server.MapPath("~/Files/" + fileName);
                 //    file.SaveAs(filePath);
                 //}
-
 
                 var GoOut = _dbContext.Go_Out.Add(model);
                 _dbContext.SaveChanges();
@@ -1303,14 +219,12 @@ namespace SMS.Web.Controllers
         /// 
         [AuthorizeUser(AccessLevel = 2)]
         [HttpPost]
-        public ActionResult Edit(Go_Out model)
+        public ActionResult Edit(Go_Out m)
         {
             try
             {
-                if (!ModelState.IsValid)
-                {
-                    return Content("Dữ liệu nhập vào không đúng");
-                }
+                var goJSON = Request.Form.Get("GoOut");
+                var model = JsonConvert.DeserializeObject<Go_Out>(goJSON);
 
                 //var filePath = "";
                 ////file
@@ -1347,29 +261,27 @@ namespace SMS.Web.Controllers
                 //}
 
                 var listItemIDs = new List<int>();
-                if (model.Go_Out_Items != null)
+                foreach (var item in model.Go_Out_Items)
                 {
-                    foreach (var item in model.Go_Out_Items)
+                    if (item.ID == 0)
                     {
-                        if (item.ID == 0)
-                        {
-                            _dbContext.Go_Out_Items.Add(item);
-                        }
-                        else
-                        {
-                            listItemIDs.Add(item.ID);
-                            var bringItem = _dbContext.Go_Out_Items.FirstOrDefault(t => t.ID == item.ID);
-                            bringItem.Item = item.Item;
-                            bringItem.Serial = item.Serial;
-                            bringItem.Quantity = item.Quantity;
-                            bringItem.Unit = item.Unit;
-                            bringItem.AssetType = item.AssetType;
-                            bringItem.IsReturn = item.IsReturn;
-                            bringItem.ReturnDate = item.ReturnDate;
-                            bringItem.ReturnTime = item.ReturnTime;
-                            bringItem.ModifiedBy = user.EmpCode;
-                            bringItem.ModifiedDate = DateTime.Now;
-                        }
+                        _dbContext.Go_Out_Items.Add(item);
+                    }
+                    else
+                    {
+                        listItemIDs.Add(item.ID);
+                        var bringItem = _dbContext.Go_Out_Items.FirstOrDefault(t => t.ID == item.ID);
+
+                        bringItem.Item = item.Item;
+                        bringItem.Serial = item.Serial;
+                        bringItem.Quantity = item.Quantity;
+                        bringItem.Unit = item.Unit;
+                        bringItem.AssetType = item.AssetType;
+                        bringItem.IsReturn = item.IsReturn;
+                        bringItem.ReturnDate = item.ReturnDate;
+                        bringItem.ReturnTime = item.ReturnTime;
+                        bringItem.ModifiedBy = user.EmpCode;
+                        bringItem.ModifiedDate = DateTime.Now;
                     }
                 }
                 var itemsDelete = _dbContext.Go_Out_Items.Where(t => !listItemIDs.Contains(t.ID) && t.CatID == GoOut.ID);
@@ -1523,3 +435,1030 @@ namespace SMS.Web.Controllers
         }
     }
 }
+
+
+
+
+
+------------------------------------------------------------------------------------------
+
+
+
+@{
+    ViewBag.Title = "Create";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section styles{
+    <link href="~/Assets/css/jquery.timepicker.min.css" rel="stylesheet" />
+    <link href="~/Assets/css/jquery-confirm.css" rel="stylesheet" />
+}
+
+<div class="form-horizontal">
+    <div class="card-header">
+        <h5 class="m-0 font-weight-bold text-primary">ĐĂNG KÝ RA NGOÀI</h5>
+    </div>
+    <!--Cột bên trái dành cho form đăng ký-->
+    <div class="col-md-12 row-form">
+        <div class="column form-horizontal form-left col-md-7">
+            <div class="form-group row-1 input-group">
+                <label class="control-label col-md-2 lb">Mã CNV <span class="red">(*)</span></label>
+                <div class="col-md-3 input-group input-group-sm">
+                    <input class="form-control input-previous-button col-md-12" id="txtEmpCodeGO" maxlength="8" autocomplete="off" />
+                </div>
+            </div>
+
+            @*<div class="form-group input-group">
+                <label class="control-label col-md-2 top-space">Đăng ký nhóm</label>
+                <div class="col-10 input-group">
+                    <a id="guest-multi-day" class="btn-info btn btn-sm" title="Đăng ký theo đoàn" style="color: white; cursor: pointer" data-toggle="collapse" data-target=".multi_day">
+                        <i class="fas fa-edit"></i>&nbsp; Đăng ký nhóm
+                    </a>
+                    &nbsp;
+                    &nbsp;
+                    <div class="multi_day row collapse input-group-sm col-8">
+                        <div>
+                            <a id="multi" class="btn-primary btn btn-sm" href="/Guest/TemplateGuest" title="Đăng ký theo đoàn" style="color: white; cursor: pointer">
+                                <i class="fas fa-download"></i>&nbsp; Tải file mẫu
+                            </a>
+                        </div>
+                        &nbsp;&nbsp;
+                        <div class="form-horizontal col-8 row-add input-group-sm" id="import_file" style="padding: 1px">
+                            <input class="input-group-sm" type="file" accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel" id="fileRedirectUrl" placeholder="Chọn file Excel" />
+                        </div>
+                    </div>
+                </div>
+            </div>*@
+
+            <div class="form-group input-group">
+                <label class="control-label col-md-2 top-space">Ca <span class="red">(*)</span></label>
+                <div class="col-3 input-group-sm">
+                    <select class="form-control input-previous-button" id="shift">
+                        <option value="0" selected>Hành chính</option>
+                        <option value="1">Ca 1</option>
+                        <option value="2">Ca 2</option>
+                        <option value="3">Ca 3</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group input-group">
+                <label class="control-label col-md-2 top-space">Mục đích <span class="red">(*)</span></label>
+                <div class="col-3 input-group-sm">
+                    <select class="form-control input-previous-button" id="purpose">
+                        <option value="true" selected>Công việc</option>
+                        <option value="false">Cá nhân</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group input-group">
+                <label class="control-label col-md-2 top-space">Lý do <span class="red">(*)</span></label>
+                <div class="col-md-10 input-group-sm">
+                    <textarea class="form-control col-md-12" style="resize: none" id="reason"></textarea>
+                </div>
+            </div>
+
+            <div class="form-group input-group specific-date-pick">
+                <label class="col-2 top-space" for="EstimatedDateOut">Ngày ra <span class="red">(*)</span></label>
+                <div class="col-3 input-group-sm">
+                    <input class="form-control input-previous-button datepicker" id="estimated_date_out" placeholder="Ngày" style="background: white" readonly autocomplete="off" />
+                </div>
+                <label class="top-space" for="EstimatedTimeOut">Giờ ra <span class="red">(*)</span></label>
+                <div class="col-2 input-group-sm">
+                    <input class="form-control input-previous-button timepicker" id="estimated_time_out" placeholder="Giờ" type="time" />
+                </div>
+            </div>
+
+            <div class="form-group input-group specific-date-pick">
+                <label class="col-2 top-space" for="EstimatedDateReturn">Ngày quay lại <span class="red">(*)</span></label>
+                <div class="col-3 input-group-sm">
+                    <input class="form-control input-previous-button datepicker" id="estimated_date_return" placeholder="Ngày" style="background: white" readonly autocomplete="off" />
+                </div>
+                <label class="top-space" for="EstimatedTimeReturn">Giờ quay lại <span class="red">(*)</span></label>
+                <div class="col-2 input-group-sm">
+                    <input class="form-control input-previous-button timepicker" id="estimated_time_return" placeholder="Giờ" type="time" />
+                </div>
+            </div>
+        </div>
+
+        <div class="column col-md-1 col-mid"></div>
+
+        <!--Cột bên phải dành cho thông tin nhân viên-->
+        <div class="column form-horizontal form-right col-md-4">
+            <!--Ảnh profile-->
+            <div class="form-group col-12 profile-img">
+                <div class="img-profile" id="emp_img">
+                    <img id="img-profile" src="~/Assets/img/the-world.jpg" />
+                </div>
+            </div>
+            <!--Thông tin profile-->
+            <div class="form-group input-group input-group-sm">
+                <label class="col-3 top-space" for="FullName">Họ và tên</label>
+                <input readonly class="form-control col-9 input-previous-button" id="txtFullNameGO" />
+            </div>
+            <div class="form-group input-group input-group-sm">
+                <label class="col-3 top-space" for="Positon">Vị trí</label>
+                <input readonly class="form-control col-9 input-previous-button" id="txtPositionGO" />
+            </div>
+            <div class="form-group input-group input-group-sm">
+                <label class="col-3 top-space" for="Positon">Phòng ban</label>
+                <input readonly class="form-control col-9 input-previous-button" id="txtTeamGO" />
+            </div>
+        </div>
+    </div>
+</div>
+
+<br />
+
+<div class="note col-12">
+    <span class="control-label" style="color: dodgerblue"><u>Lưu ý</u>: <span style="color: #858796">&nbsp;Các trường <span style="color:red">(*)</span> bắt buộc phải nhập đầy đủ.</span></span>
+</div>
+
+<br />
+
+<div class="bottom collapse show">
+    <div class="form-horizontal row-add" id="bring-out-items" style="width:100%">
+        <div class="items-container">
+            <table class="table-bordered table table-hover" id="GO-items">
+                <thead>
+                    <tr class="table-header-items">
+                        <th></th>
+                        <th>Tên tài sản</th>
+                        <th>Serial</th>
+                        <th>Số lượng</th>
+                        <th>Đơn vị</th>
+                        <th>Loại tài sản</th>
+                        <th>Mang quay lại</th>
+                        <th colspan="2">Thời gian quay lại</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div style="text-align: center">
+        <label id="add-row-items" class="btn-primary btn top-space btn-sm" title="Thêm hàng hóa khác" style="cursor: pointer; margin-top:8px;">
+            <i class="fas fa-plus"></i>&nbsp; Thêm tài sản
+        </label>
+        <button id="register" class="btn-success btn btn-sm" type="submit" title="Đăng ký mang hàng ra" style="cursor: pointer">
+            <i class="fas fa-edit"></i>&nbsp; Đăng ký
+        </button>
+    </div>
+</div>
+
+@section scripts{
+    <script src="~/Assets/js/jquery.timepicker.min.js"></script>
+    <script src="~/Assets/js/jquery-confirm.js"></script>
+    <script src="~/Assets/js/go_out/common.js"></script>
+    <script>
+        $("#add-row-items").off('click').on('click', function (e) {
+            var html = `<tr class="row-items">
+                                    <td>
+                                        <label class="control-label btn btn-sm delete-items"><i class="fas fa-times-circle"></i></label>
+                                    </td>
+                                    <td class="input-group-sm">
+                                        <input class="form-control input-previous-button item" />
+                                    </td>
+                                    <td class="input-group-sm">
+                                        <input class="form-control input-previous-button serial" />
+                                    </td>
+                                    <td class="input-group-sm">
+                                        <input type="number" class="form-control input-previous-button quantity" min="0" />
+                                    </td>
+                                    <td class="input-group-sm">
+                                        <input class="form-control input-previous-button unit" maxlength = "50" />
+                                    </td>
+                                    <td class="input-group-sm">
+                                        <select class="form-control input-previous-button assetType">
+                                            <option value="0" selected>Hàng thường</option>
+                                            <option value="1">Hàng IT</option>
+                                            <option value="2">Hàng độc hại</option>
+                                        </select>
+                                    </td>
+                                    <td class="input-group-sm">
+                                        <select class="form-control input-previous-button isReturn">
+                                            <option value="true" selected>Có</option>
+                                            <option value="false">Không</option>
+                                        </select>
+                                    </td>
+                                    <td class="input-group-sm">
+                                        <input class="form-control datepicker returnDate" placeholder="Ngày" style="background: white" readonly autocomplete="off" />
+                                    </td>
+                                    <td class="input-group-sm">
+                                        <input class="form-control timepicker returnTime" placeholder="Giờ" type="time"/>
+                                    </td>
+                                </tr>`;
+            $('#GO-items > tbody:last-child').append(html);
+
+            $('.datepicker, #estimated_date, .returnDate').datepicker({
+                dateFormat: 'dd/mm/yy'
+            });
+
+            $("#GO-items").on("click", ".delete-items", function () {
+                $(this).closest(".row-items").remove();
+            });
+        });
+
+        $('.datepicker, #estimated_date, .returnDate').datepicker({
+            dateFormat: 'dd/mm/yy'
+        });
+
+        $("#GO-items").on("click", ".delete-items", function () {
+            $(this).closest(".row-items").remove();
+        });
+
+        $('#txtEmpCodeGO').keyup(function () {
+            var count = $('#txtEmpCodeGO').val().length;
+            if (count == 7 || count == 8) {
+                _userGO.getUserGO();
+            } else {
+                $('#txtFullNameGO').val("");
+                $('#txtPositionGO').val("");
+                $('#txtTeamGO').val("");
+            }
+        });
+
+        $("#GO").removeClass('collapse');
+        $("#GO").removeClass('collapsed');
+        $("#GO").attr("aria-expanded", "true");
+        $("#GOCreate").addClass('active');
+        $("#collapseGoOut").addClass('show');
+        $("#collapseInOut").removeClass('collapse');
+
+        var date = new Date();
+
+        var day = date.getDate(),
+            hour = date.getHours(),
+            min = date.getMinutes();
+
+        day = (day < 10 ? "0" : "") + day;
+        hour = (hour < 10 ? "0" : "") + hour;
+        min = (min < 10 ? "0" : "") + min;
+
+        displayTime = hour + ":" + min;
+        document.getElementById("estimated_time_out").value = displayTime;
+        document.getElementById("estimated_time_return").value = displayTime;
+    </script>
+}
+
+
+
+
+-------------------------------------------------------------------------------
+
+
+
+@model SMS.Models.EF.Go_Out
+@{
+    ViewBag.Title = "Edit";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section styles{
+    <link href="~/Assets/css/jquery.timepicker.min.css" rel="stylesheet" />
+    <link href="~/Assets/css/jquery-confirm.css" rel="stylesheet" />
+}
+
+<div class="form-horizontal">
+    <div class="card-header">
+        <h5 class="m-0 font-weight-bold text-primary">CHỈNH SỬA RA NGOÀI</h5>
+    </div>
+    <!--Cột bên trái dành cho form đăng ký-->
+    <div class="col-md-12 row-form">
+        <div class="column form-horizontal form-left col-md-7">
+            <div class="form-group row-1 input-group">
+                <label class="control-label col-md-2 lb">Mã CNV <span class="red">(*)</span></label>
+                <div class="col-md-3 input-group input-group-sm">
+                    <input type="hidden" id="txtID" value="@Model.ID" />
+                    <input class="form-control input-previous-button col-md-12" id="txtEmpCodeGO" value="@Model.EmpCode" readonly />
+                </div>
+            </div>
+
+            @*<div class="form-group input-group">
+                <label class="control-label col-md-2 top-space">Đăng ký nhóm</label>
+                <div class="col-10 input-group">
+                    <a id="guest-multi-day" class="btn-info btn btn-sm" title="Đăng ký theo đoàn" style="color: white; cursor: pointer" data-toggle="collapse" data-target=".multi_day">
+                        <i class="fas fa-edit"></i>&nbsp; Đăng ký nhóm
+                    </a>
+                    &nbsp;
+                    &nbsp;
+                    <div class="multi_day row collapse input-group-sm col-8">
+                        <div>
+                            <a id="multi" class="btn-primary btn btn-sm" href="/Guest/TemplateGuest" title="Đăng ký theo đoàn" style="color: white; cursor: pointer">
+                                <i class="fas fa-download"></i>&nbsp; Tải file mẫu
+                            </a>
+                        </div>
+                        &nbsp;&nbsp;
+                        <div class="form-horizontal col-8 row-add input-group-sm" id="import_file" style="padding: 1px">
+                            <input class="input-group-sm" type="file" accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel" id="fileRedirectUrl" placeholder="Chọn file Excel" />
+                        </div>
+                    </div>
+                </div>
+            </div>*@
+
+            <div class="form-group input-group">
+                <label class="control-label col-md-2">Ca <span class="red">(*)</span></label>
+                <div class="col-md-3 input-group-sm">
+                    <select class="form-control input-previous-button" id="shift">
+                        <option value="0" @if (Model.Shift == 0) { @: selected
+                                }>
+                            Hành chính
+                        </option>
+                        <option value="1" @if (Model.Shift == 1) { @: selected
+                                }>
+                            Ca 1
+                        </option>
+                        <option value="2" @if (Model.Shift == 2) { @: selected
+                                }>
+                            Ca 2
+                        </option>
+                        <option value="2" @if (Model.Shift == 3) { @: selected
+                                }>
+                            Ca 3
+                        </option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group input-group">
+                <label class="control-label col-md-2">Mục đích <span class="red">(*)</span></label>
+                <div class="col-md-3 input-group-sm">
+                    <select class="form-control input-previous-button" id="purpose">
+                        <option value="false" @if (Model.Purpose == false) { @: selected
+                                }>
+                            Cá nhân
+                        </option>
+                        <option value="true" @if (Model.Purpose == true) { @: selected
+                                }>
+                            Công việc
+                        </option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group input-group">
+                <label class="control-label col-md-2">Lý do <span class="red">(*)</span></label>
+                <div class="col-md-10 input-group-sm">
+                    <textarea class="form-control col-md-12" style="resize: none" id="reason">@Model.Reason</textarea>
+                </div>
+            </div>
+
+            <div class="form-group input-group specific-date-pick">
+                <label class="col-2 top-space" for="EstimatedDate">Ngày ra <span class="red">(*)</span></label>
+                <div class="col-3 input-group-sm">
+                    <input class="form-control input-previous-button datepicker" id="estimated_date_out" placeholder="Ngày" value="@Model.EstimatedDateOut" style="background: white" readonly autocomplete="off" />
+                </div>
+                <div class="col-2 input-group-sm">
+                    <input class="form-control input-previous-button timepicker" id="estimated_time_out" placeholder="Giờ" value="@Model.EstimatedTimeOut" type="time" />
+                    <input type="hidden" id="txtCreatedBy" value="@Model.CreatedBy" />
+                    <input type="hidden" id="txtCreatedDate" value="@Model.CreatedDate" />
+                </div>
+            </div>
+
+            <div class="form-group input-group specific-date-pick">
+                <label class="col-2 top-space" for="EstimatedDate">Ngày quay lại <span class="red">(*)</span></label>
+                <div class="col-3 input-group-sm">
+                    <input class="form-control input-previous-button datepicker" id="estimated_date_return" placeholder="Ngày" value="@Model.EstimatedDateReturn" style="background: white" readonly autocomplete="off" />
+                </div>
+                <div class="col-2 input-group-sm">
+                    <input class="form-control input-previous-button timepicker" id="estimated_time_return" placeholder="Giờ" value="@Model.EstimatedTimeReturn" type="time" />
+                    <input type="hidden" id="txtCreatedBy" value="@Model.CreatedBy" />
+                    <input type="hidden" id="txtCreatedDate" value="@Model.CreatedDate" />
+                </div>
+            </div>
+        </div>
+
+        <div class="column col-md-1 col-mid"></div>
+
+        <!--Cột bên phải dành cho thông tin nhân viên-->
+        <div class="column form-horizontal form-right col-md-4">
+            <!--Ảnh profile-->
+            <div class="form-group col-12 profile-img">
+                <div class="img-profile">
+                    <img id="img-profile" src="~/Assets/img/the-world.jpg" />
+                </div>
+            </div>
+            <!--Thông tin profile-->
+            <div class="form-group input-group profile input-group-sm">
+                <label class="control-label col-md-3">Họ và tên</label>
+                <input readonly class="form-control input-previous-button col-9 " id="txtFullNameGO" value="@Model.FullName" disabled />
+            </div>
+            <div class="form-group input-group profile input-group-sm">
+                <label class="control-label col-md-3">Vị trí</label>
+                <input readonly class="form-control input-previous-button col-9 " id="txtPositionGO" value="@Model.Position" disabled />
+            </div>
+            <div class="form-group input-group profile input-group-sm">
+                <label class="control-label col-md-3">Phòng ban</label>
+                <input readonly class="form-control input-previous-button col-9 " id="txtTeamBO" value="@Model.Team" disabled />
+            </div>
+        </div>
+    </div>
+</div>
+
+<br />
+
+<div class="note col-12">
+    <span class="control-label" style="color: dodgerblue"><u>Lưu ý</u>: <span style="color: #858796">&nbsp;Các trường <span style="color:red">(*)</span> bắt buộc phải nhập đầy đủ.</span></span>
+</div>
+
+<br />
+
+<div class="bottom collapse show">
+    <div class="form-horizontal col-12 row-add" id="bring-out-items" style="width: 100%">
+        <div class="items-container">
+            <table class="table-bordered table table-hover" id="GO-items">
+                <thead>
+                    <tr class="table-header-items">
+                        <th></th>
+                        <th>Tên tài sản <span class="red">(*)</span></th>
+                        <th>Serial <span class="red">(*)</span></th>
+                        <th>Số lượng <span class="red">(*)</span></th>
+                        <th>Đơn vị <span class="red">(*)</span></th>
+                        <th>Loại tài sản <span class="red">(*)</span></th>
+                        <th>Mang trở ra <span class="red">(*)</span></th>
+                        <th colspan="2">Thời gian trở ra</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.Go_Out_Items)
+                    {
+                        <tr class="row-items">
+                            <td>
+                                <label class="control-label btn btn-sm delete-items"><i class="fas fa-times-circle"></i></label>
+                            </td>
+                            <td class="input-group-sm">
+                                <input type="hidden" class="ItemId" value="@item.ID" />
+                                <input class="form-control input-previous-button item" value="@item.Item" />
+                            </td>
+                            <td class="input-group-sm">
+                                <input class="form-control input-previous-button serial" value="@item.Serial" />
+                            </td>
+                            <td class="input-group-sm">
+                                <input type="number" class="form-control input-previous-button quantity" value="@item.Quantity" min="0"/>
+                            </td>
+                            <td class="input-group-sm">
+                                <input class="form-control input-previous-button unit" value="@item.Unit" maxlength="50" />
+                            </td>
+                            <td class="input-group-sm">
+                                <select class="form-control input-previous-button assetType">
+                                    <option value="0" @if (item.AssetType == 0) { @: selected
+                                            }>
+                                        Hàng thường
+                                    </option>
+                                    <option value="1" @if (item.AssetType == 1) { @: selected
+                                            }>
+                                        Hàng IT
+                                    </option>
+                                    <option value="2" @if (item.AssetType == 2) { @: selected
+                                            }>
+                                        Hàng độc hại
+                                    </option>
+                                </select>
+                            </td>
+                            <td class="input-group-sm">
+                                <select class="form-control input-previous-button isReturn">
+                                    <option value="1" @if (item.IsReturn.Value) { @: selected
+                                            }>
+                                        Có
+                                    </option>
+                                    <option value="0" @if (item.IsReturn.HasValue && !item.IsReturn.Value) { @: selected
+                                            }>
+                                        Không
+                                    </option>
+                                </select>
+                            </td>
+                            <td class="input-group-sm">
+                                <input class="form-control datepicker returnDate" placeholder="Ngày" value="@item.ReturnDate" style="background: white" readonly autocomplete="off" />
+                            </td>
+                            <td class="input-group-sm">
+                                <input class="form-control timepicker returnTime" placeholder="Giờ" value="@item.ReturnTime" type="time" />
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div style="text-align: center">
+        <label id="add-row-items" class="btn-primary btn top-space btn-sm" title="Thêm hàng hóa khác" style="cursor: pointer; margin-top:8px;">
+            <i class="fas fa-plus"></i>&nbsp; Thêm tài sản
+        </label>
+        <button id="register" class="btn-success btn btn-sm" type="submit" title="Đăng ký mang hàng vào" style="cursor: pointer">
+            <i class="fas fa-edit"></i>&nbsp; Cập nhật
+        </button>
+    </div>
+</div>
+@section scripts{
+    <script src="~/Assets/js/jquery.timepicker.min.js"></script>
+    <script src="~/Assets/js/jquery-confirm.js"></script>
+    <script src="~/Assets/js/go_out/common.js"></script>
+    <script>
+        $("#add-row-items").off('click').on('click', function (e) {
+            var html = `<tr class="row-items">
+                            <td>
+                                <label class="control-label btn btn-sm delete-items"><i class="fas fa-times-circle"></i></label>
+                            </td>
+                            <td class="input-group-sm">
+                                <input class="form-control input-previous-button item" />
+                            </td>
+                            <td class="input-group-sm">
+                                <input class="form-control input-previous-button serial" />
+                            </td>
+                            <td class="input-group-sm">
+                                <input type="number" class="form-control input-previous-button quantity" min="0" />
+                            </td>
+                            <td class="input-group-sm">
+                                <input class="form-control input-previous-button unit" />
+                            </td>
+                            <td class="input-group-sm">
+                                <select class="form-control input-previous-button assetType">
+                                    <option value="0" selected>Hàng thường</option>
+                                    <option value="1">Hàng IT</option>
+                                    <option value="2">Hàng độc hại</option>
+                                </select>
+                            </td>
+                            <td class="input-group-sm">
+                                <select class="form-control input-previous-button isReturn">
+                                <option value="true" selected>Có</option>
+                                <option value="false">Không</option>
+                                </select>
+                            </td>
+                            <td class="input-group-sm">
+                                <input class="form-control datepicker returnDate" placeholder="Ngày" style="background: white" readonly autocomplete="off" />
+                            </td>
+                            <td class="input-group-sm">
+                                <input class="form-control timepicker returnTime" placeholder="Giờ" type="time" />
+                            </td>
+                        </tr>`;
+            $('#GO-items > tbody:last-child').append(html);
+
+            $('.datepicker, #estimated_date, .returnDate').datepicker({
+                dateFormat: 'dd/mm/yy'
+            });
+
+            $("#GO-items").on("click", ".delete-items", function () {
+                $(this).closest(".row-items").remove();
+            });
+        });
+
+        $('.datepicker, #estimated_date').datepicker({
+            dateFormat: 'dd/mm/yy'
+        });
+
+        $("#GO-items").on("click", ".delete-items", function () {
+            $(this).closest(".row-items").remove();
+        });
+
+        //Edit
+        $('#register').on("click", (event) => {
+            event.preventDefault();
+            var data = new FormData();
+            var goOutObject = {};
+            goOutObject.ID = $('#txtID').val();
+            goOutObject.EmpCode = $('#txtEmpCodeGO').val();
+            goOutObject.Reason = $('#reason').val();
+            goOutObject.Shift = $('#shift').val();
+            goOutObject.Purpose = $('#purpose').val();
+            goOutObject.FullName = $('#txtFullNameGO').val();
+            goOutObject.Position = $('#txtPositionGO').val();
+            goOutObject.Team = $('#txtTeamGO').val();
+            goOutObject.EstimatedDateOut = $('#estimated_date_out').val();
+            goOutObject.EstimatedTimeOut = $('#estimated_time_out').val();
+            goOutObject.EstimatedDateReturn = $('#estimated_date_return').val();
+            goOutObject.EstimatedTimeReturn = $('#estimated_time_return').val();
+            goOutObject.Go_Out_Items = [];
+
+            $(".row-items").each((index, item) => {
+                var goOutItem = {};
+                goOutItem.ID = $(item).find('input[class*=ItemId]').val();
+                goOutItem.CatID = $('#txtID').val();
+                goOutItem.Item = $(item).find('input[class*=item]').val();
+                goOutItem.Serial = $(item).find('input[class*=serial]').val();
+                goOutItem.Quantity = $(item).find('input[class*=quantity]').val();
+                goOutItem.Unit = $(item).find('input[class*=unit]').val();
+                goOutItem.AssetType = $(item).find('select[class*=assetType]').val();
+                goOutItem.IsReturn = $(item).find('select[class*=isReturn]').val() === '1';
+                goOutItem.ReturnDate = $(item).find('input[class*=returnDate]').val();
+                goOutItem.ReturnTime = $(item).find('input[class*=returnTime]').val();
+
+                goOutObject.Go_Out_Items.push(goOutItem);
+            });
+            data.append("GoOut", JSON.stringify(goOutObject));
+            //goOutObject.append("file", $('#fileRedirectUrl')[0].files[0]);
+
+            $.confirm({
+                title: "Thông báo",
+                content: function () {
+                    var self = this;
+                    return $.ajax({
+                        url: "/GoOut/Edit",
+                        method: "POST",
+                        data: data,
+                        processData: false,
+                        contentType: false,
+                        success: function (mess) {
+                            if (mess === "Success") {
+                                window.location.href = "/GoOut/History"
+                            }
+                            else {
+                                self.setContent(mess);
+                            }
+                        }
+                    })
+                }
+            })
+
+        });
+
+        $("#GO").removeClass('collapse');
+        $("#GO").removeClass('collapsed');
+        $("#GO").attr("aria-expanded", "true");
+        $("#GOHistory").addClass('active');
+        $("#collapseGoOut").addClass('show');
+        $("#collapseInOut").removeClass('collapse');
+    </script>
+
+}
+
+
+------------------------------------------------------------------------------
+
+
+@{
+    ViewBag.Title = "History";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section styles{
+    <link href="~/Assets/css/jquery.dataTables.min.css" rel="stylesheet" />
+    <link href="~/Assets/css/jquery-confirm.css" rel="stylesheet" />
+    <style>
+        label {
+            color: black;
+        }
+
+        #LE-table_filter {
+            display: none;
+        }
+    </style>
+}
+
+<!--Div chứa table dữ liệu-->
+<div style="width:100%">
+    <div class="card-header">
+        <h5 class="m-0 font-weight-bold text-primary">DANH SÁCH CNV RA NGOÀI</h5>
+    </div>
+    <div class="row dataTables_wrapper dt-bootstrap4 above-table">
+        <div class="col-2 input-group input-group-sm">
+            <label class="no-margin-bottom" style="padding-top: 5px">Từ ngày</label>
+            &nbsp;
+            <input id="date_from" class="form-control bg-light from-date" autocomplete="off">
+        </div>
+        <div class="col-2 input-group input-group-sm">
+            <label class="no-margin-bottom" style="padding-top: 5px">Đến ngày</label>
+            &nbsp;
+            <input id="date_to" class="form-control bg-light to-date" autocomplete="off">
+        </div>
+        <div class="col-1">
+            <button class="btn btn-sm btn-primary" id="btn-search" type="button"><i class="fas fa-search"></i> Tìm kiếm</button>
+        </div>
+        <div class="col-5"></div>
+        <div class="col-2 input-group input-group-sm">
+            <label class="no-margin-bottom" style="padding-top: 5px">Tìm kiếm chung</label>
+            &nbsp;
+            <input class="form-control bg-light to-date" type="text" id="search-all" autocomplete="off" />
+        </div>
+    </div>
+
+    <div style="width:100%; overflow-x:auto">
+        <!--Bảng dữ liệu Ra ngoài-->
+        <table class="table table-hover table-bordered" id="LE-table" style="border-collapse: collapse; width: 100%" data-order='[[ 1, "desc" ]]'>
+            <!--Tiêu đề cột-->
+            <thead>
+                <tr class="table-heading">
+                    <th class="th-1">In ấn</th>
+                    <th class="th-1">Mã</th>
+                    <th class="th-1">Nhân viên</th>
+                    <th class="th-1">Vị trí</th>
+                    <th class="th-1">Phòng ban</th>
+                    <th class="th-1">Ca</th>
+                    <th class="th-1">Mục đích</th>
+                    <th class="th-1">Lí do</th>
+                    <th class="th-1">Thời gian ra</th>
+                    <th class="th-1">Thời gian quay lại</th>
+                    <th class="th-1">Thao tác</th>
+                    <th class="th-1">Chi tiết</th>
+                    <th class="th-1">Người tạo</th>
+                    <th class="th-1">Chỉnh sửa</th>
+                </tr>
+            </thead>
+            <tbody id="tblData"></tbody>
+        </table>
+    </div>
+</div>
+<div id="pagination" class="pagination"></div>
+<!-- /.container-fluid -->
+
+@section scripts{
+    <script src="~/Assets/js/jquery.timepicker.min.js"></script>
+    <script src="~/Assets/js/jquery-confirm.js"></script>
+    <script src="~/Assets/js/jquery.dataTables.min.js"></script>
+    <script>
+        var table = null;
+        var currentRole = null;
+        var items = null;
+
+        $(document).ready(() => {
+            var options = {
+                "serverSide": false,
+                "searching": true,
+                "orderCellsTop": true,
+                "fixedHeader": true,
+                "processing": true,
+                "paging": true,
+                "oLanguage": {
+                    "sLengthMenu": "_MENU_"
+                },
+                "lengthMenu": [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
+                "pageLength": 20,
+                "lengthChange": false,
+                "ajax": {
+                    "type": "POST",
+                    "url": "/GoOut/FetchGoOutData",
+                    "dataType": "json",
+                    "contentType": 'application/json; charset=utf-8',
+
+                    "dataSrc": function (res) {
+                        currentRole = res.currentRole;
+                        items = res.items;
+                        return res.data;
+                    }
+                },
+                "columns": [
+                    {
+                        data: function (res) {
+                            var html = '';
+                            if (!res.Cancel) {
+                                html = `<a href="/GoOut/GOReport/${res.ID}" target="_blank" class="btn btn-print btn-primary btn-standard" id="btnPrint" title="In báo cáo">
+                                               <i class="fas fa-print" style="margin-left:-3.5px;"></i>
+                                            </a>`
+                            }
+                            return html;
+                        }
+                    },
+                    {
+                        data: function (res) {
+                            html = '';
+                            if (isOver(res, items)) {
+                                html = `<span style="color:red">${res.ID}</span>`
+                            } else {
+                                html = `<span>${res.ID}</span>`
+                            }
+                            return html;
+                        }
+                    },
+                    {
+                        data: function (res) {
+                            html = '';
+                            if (isOver(res, items)) {
+                                html = `<span class="border-right" style="padding-right:10px; color:red">${res.EmpCode}</span><span style="margin-left:10px; color:red">${res.FullName}</span>`
+                            } else {
+                                html = `<span class="border-right" style="padding-right:10px;">${res.EmpCode}</span><span style="margin-left:10px;">${res.FullName}</span>`
+                            }
+                            return html;
+                        }
+                    },
+                    {
+                        data: function (res) {
+                            html = '';
+                            if (isOver(res, items)) {
+                                html = `<span style="color:red">${res.Position}</span>`
+                            } else {
+                                html = `<span>${res.Position}</span>`
+                            }
+                            return html;
+                        }
+                    },
+                    {
+                        data: function (res) {
+                            html = '';
+                            if (isOver(res, items)) {
+                                html = `<span style="color:red">${res.Team}</span>`
+                            } else {
+                                html = `<span>${res.Team}</span>`
+                            }
+                            return html;
+                        }
+                    },
+                    {
+                        data: function (res) {
+                            shift = '';
+                            html = '';
+                            if (res.Shift == 0) {
+                                shift = 'Hành chính'
+                            } else if (res.Shift == 1) {
+                                shift = '1'
+                            } else if (res.Shift == 2) {
+                                shift = '2'
+                            } else if (res.Shift == 3) {
+                                shift = '3'
+                            }
+                            if (isOver(res, items)) {
+                                html = `<span style="color:red">${shift}</span>`
+                            } else {
+                                html = `<span>${shift}</span>`
+                            }
+                            return html;
+                        }
+                    },
+                    {
+                        data: function (res) {
+                            html = '';
+                            purpose = '';
+                            if (res.Purpose == 0) {
+                                purpose = 'Cá nhân'
+                            } else if (res.Purpose == 1) {
+                                purpose = 'Công việc'
+                            }
+                            if (isOver(res, items)) {
+                                html = `<span style="color:red">${purpose}</span>`
+                            } else {
+                                html = `<span>${purpose}</span>`
+                            }
+                            return html;
+                        }
+                    },
+                    {
+                        data: function (res) {
+                            html = '';
+                            if (isOver(res, items)) {
+                                html = `<span style="color:red">${res.Reason}</span>`
+                            } else {
+                                html = `<span>${res.Reason}</span>`
+                            }
+                            return html;
+                        }
+                    },
+                    {
+                        data: function (res) {
+                            html = '';
+                            if (isOver(res, items)) {
+                                html = `<span style="color:red">${res.EstimatedDateOut}</span> <span style="color:red">${res.EstimatedTimeOut}</span>`
+                            } else {
+                                html = `<span>${res.EstimatedDateOut}</span> <span>${res.EstimatedTimeOut}</span>`
+                            }
+                            return html;
+                        }
+                    },
+                    {
+                        data: function (res) {
+                            html = '';
+                            if (isOver(res, items)) {
+                                html = `<span style="color:red">${res.EstimatedDateReturn}</span> <span style="color:red">${res.EstimatedTimeReturn}</span>`
+                            } else {
+                                html = `<span>${res.EstimatedDateReturn}</span> <span>${res.EstimatedTimeReturn}</span>`
+                            }
+                            return html;
+                        }
+                    },
+                    {
+                        data: function (res) {
+                            if (currentRole <= 1) {
+                                return ''
+                            }
+
+                            var html = '';
+                            if (res.Cancel) {
+                                html = `<span class="red"><b>Hủy bỏ</b></span>`;
+                            }
+                            else {
+                                if (res.GuardStatusReturn == null) {
+                                    if (res.ApprovedStatus != null) {
+                                        html = `<a class="btn btn-cancel btn-danger btn-standard" id="btnCancel" onclick="Cancel(${res.ID})" title="Hủy bỏ">
+                                                       <i class="fas fa-lock" style="margin-left: -3px"></i>
+                                                    </a>`
+                                    } else {
+                                        html = `<a class="btn btn-edit btn-standard btnEdit" title="Sửa" href="/GoOut/Edit/${res.ID}">
+                                                       <i class="icon fas fa-cog" style="margin-left: -4px"></i>
+                                                    </a>
+                                                    <a class="btn btn-danger btn-standard btn-delete btnXoa" onclick="Delete(${res.ID})" title="Xóa">
+                                                       <i class="icon fas fa-times" style="margin-left: -2px; color: white; cursor: pointer"></i>
+                                                    </a>`;
+                                    }
+                                }
+                            }
+                            return html;
+                        }
+                    },
+                    {
+                        data: function (res) {
+                            var html = `<a href="/GoOut/Detail/${res.ID}" class="btn btn-standard btn-primary"><i class="fas fa-info" style="color: white"></i></a>`;
+                            return html;
+                        }
+                    },
+                    {
+                        data: function (res) {
+                            if (res.CreatedDate === null || res.CreatedDate === "" || typeof (res.CreatedDate) === "undefined")
+                                return "";
+                            var date = new Date(parseInt(res.CreatedDate.replace(/[^0-9 +]/g, '')));
+                            var createdDate = `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}  ${date.getHours()}:${date.getMinutes()}`;
+                            return `<span class="border-right" style="padding-right:10px;">${res.CreatedBy}</span><span style="margin-left:10px;">${createdDate}</span>`;
+                        }
+                    },
+                    {
+                        data: function (res) {
+                            if (res.ModifiedDate === null || res.ModifiedDate === "" || typeof (res.ModifiedDate) === "undefined")
+                                return "";
+                            var date = new Date(parseInt(res.ModifiedDate.replace(/[^0-9 +]/g, '')));
+                            var modifiedDate = `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()} ${date.getHours()}:${date.getMinutes()}`;
+                            return `<span class="border-right" style="padding-right:10px;">${res.ModifiedBy}</span ><span style="margin-left:10px;">${modifiedDate}</span>`;
+                        }
+                    }
+                ]
+            };
+            table = $('#LE-table').DataTable(options);
+
+            $('#search-all').keyup(function () {
+                table.search($(this).val()).draw();
+            })
+        });
+
+        ///Lấy ra hàng hóa đã phê duyệt r
+        function isApproved(data, items) {
+            return items.find(t => t.CatID === data.ID && t.ApprovedStatus !== null)
+        }
+
+        ///Khi đã xong quy trình thì k làm j nữa
+        function isNotDone(data, items) {
+            return items.find(t => t.CatID === data.ID && t.GuardStatusReturn === null)
+        }
+
+        ///Lấy ra hàng hóa quá hạn
+        function isOver(data, items) {
+            const obj = items.find(t => (t.CatID === data.ID && t.ReturnDate !== null && t.IsReturn === true && t.GuardStatusReturn == null && new Date(`${t.ReturnDate.split('/')[1]}/${t.ReturnDate.split('/')[0]}/${t.ReturnDate.split('/')[2]}`).getTime() - new Date(`${new Date().getMonth() + 1}/${new Date().getDate()}/${new Date().getFullYear()}`).getTime() < 0))
+            return !!obj
+        }
+
+        function Delete(id) {
+            $.confirm({
+                title: 'Xác nhận!',
+                content: 'Bạn có chắc muốn xóa!',
+                buttons: {
+                    confirm: async function () {
+                        await $.ajax({
+                            url: "/GoOut/Delete/" + id,
+                            method: "GET",
+                            success: function () {
+                                window.location.reload();
+                            }
+                        })
+                    },
+                    cancel: function () {
+                        //$.alert('Hủy bỏ!');
+                    }
+                }
+            });
+        }
+
+        function Cancel(id) {
+            $.confirm({
+                title: 'Xác nhận!',
+                content: 'Bạn có chắc muốn hủy!',
+                buttons: {
+                    confirm: async function () {
+                        await $.ajax({
+                            url: "/GoOut/Cancel/" + id,
+                            method: "GET",
+                            success: function () {
+                                window.location.reload();
+                            }
+                        })
+                    },
+                    cancel: function () {
+                        //$.alert('Hủy bỏ!');
+                    }
+                }
+            });
+        }
+
+        $('.datepicker, #date_from, #date_to').datepicker({
+            dateFormat: 'dd/mm/yy'
+        });
+
+        $("#GO").removeClass('collapse');
+        $("#GO").removeClass('collapsed');
+        $("#GO").attr("aria-expanded", "true");
+        $("#GOHistory").addClass('active');
+        $("#collapseGoOut").addClass('show');
+        $("#collapseInOut").removeClass('collapse');
+    </script>
+
+    <script src="~/Assets/js/go_out/common.js"></script>
+}
+
+
+
+
+-------------------------------------------------------------------------
